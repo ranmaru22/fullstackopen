@@ -5,8 +5,13 @@ import "./index.css";
 const Button = props => <button onClick={props.onClick}>{props.text}</button>;
 
 const Statistic = props => props.value === 0
-    ? <p></p>
-    : <p>{props.text}: {props.value}</p>;
+    ? <tr></tr>
+    : (
+        <tr>
+            <td>{props.text}:</td>
+            <td>{props.value}</td>
+        </tr>
+    );
     
 
 const Statistics = props => {
@@ -18,12 +23,17 @@ const Statistics = props => {
         ? <p>No feedback given.</p>
         : (
             <div>
-                <Statistic text="good" value={props.good} />
-                <Statistic text="neutral" value={props.neutral} />
-                <Statistic text="bad" value={props.bad} />
-                <Statistic text="all" value={all} />
-                <Statistic text="average" value={avg} />
-                <Statistic text="positive" value={pos} />
+                <h2>Statistics</h2>
+                <table>
+                    <tbody>
+                        <Statistic text="good" value={props.good} />
+                        <Statistic text="neutral" value={props.neutral} />
+                        <Statistic text="bad" value={props.bad} />
+                        <Statistic text="all" value={all} />
+                        <Statistic text="average" value={avg} />
+                        <Statistic text="positive" value={pos} />
+                    </tbody>
+                </table>
             </div>
         );
 
