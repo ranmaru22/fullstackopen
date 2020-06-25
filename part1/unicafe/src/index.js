@@ -9,17 +9,19 @@ const Statistics = props => {
     const avg = (props.good - props.bad) / all;
     const pos = `${String((props.good / all) * 100)}%`;
 
-    return (
-        <div>
-            <h1>Statistics</h1>
-            <p>Good: {props.good}</p>
-            <p>Neutral: {props.neutral}</p>
-            <p>Bad: {props.bad}</p>
-            <p>All: {all}</p>
-            <p>Average: {avg}</p>
-            <p>Positive: {pos}</p>
-        </div>
-    );
+    return props.good === 0 && props.neutral === 0 && props.bad === 0
+        ? <p>No feedback given.</p>
+        : (
+            <div>
+                <h1>Statistics</h1>
+                <p>Good: {props.good}</p>
+                <p>Neutral: {props.neutral}</p>
+                <p>Bad: {props.bad}</p>
+                <p>All: {all}</p>
+                <p>Average: {avg}</p>
+                <p>Positive: {pos}</p>
+            </div>
+        );
 
 };
 
