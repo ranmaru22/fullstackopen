@@ -18,9 +18,7 @@ const App = props => {
     const getRandomQuote = () => setSelected(getRandomInt(props.anecdotes.length));
 
     const vote = anecdoteNum => () => {
-        console.log(votes);
         const newVotes = votes.map((elem, i) => i === anecdoteNum ? elem + 1 : elem);
-        console.log(newVotes);
         return setVotes(newVotes);
     };
 
