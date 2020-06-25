@@ -12,12 +12,23 @@ const anecdotes = [
 
 const App = props => {
     const [selected, setSelected] = useState(0);
+    const [votes, setVotes] = useState(new Array(props.anecdotes.length).fill(0));
+
     const getRandomInt = x => Math.floor(Math.random() * Math.floor(x)); 
     const getRandomQuote = () => setSelected(getRandomInt(props.anecdotes.length));
+
+    const vote = anecdoteNum => () => {
+        console.log(votes);
+        const newVotes = votes.map((elem, i) => i === anecdoteNum ? elem + 1 : elem);
+        console.log(newVotes);
+        return setVotes(newVotes);
+    };
 
     return (
         <div>
             <p>{props.anecdotes[selected]}</p>
+            <p>has {votes[selected]} votes</p>
+            <button onClick={vote(selected)}>vote</button>
             <button onClick={getRandomQuote}>Get a random anecdote!</button>
         </div>
     );
