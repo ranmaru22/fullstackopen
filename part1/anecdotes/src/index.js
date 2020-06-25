@@ -18,16 +18,29 @@ const App = props => {
     const getRandomQuote = () => setSelected(getRandomInt(props.anecdotes.length));
 
     const vote = anecdoteNum => () => {
-        const newVotes = votes.map((elem, i) => i === anecdoteNum ? elem + 1 : elem);
-        return setVotes(newVotes);
+        const updatedVoteCounts = votes.map((elem, i) => i === anecdoteNum ? elem + 1 : elem);
+        return setVotes(updatedVoteCounts);
+    };
+
+    const getTopAnecdote = () => {
+        const highestVoteCount = votes.reduce((max, val) => val > max ? val : max, 0);
+        return votes.indexOf(highestVoteCount);
     };
 
     return (
         <div>
-            <p>{props.anecdotes[selected]}</p>
-            <p>has {votes[selected]} votes</p>
-            <button onClick={vote(selected)}>vote</button>
-            <button onClick={getRandomQuote}>Get a random anecdote!</button>
+            <section>
+                <h1>Anecdote of the day</h1>
+                <p>{props.anecdotes[selected]}</p>
+                <p>has {votes[selected]} votes</p>
+                <button onClick={vote(selected)}>vote</button>
+                <button onClick={getRandomQuote}>Get a random anecdote!</button>
+            </section>
+            <section>
+                <h1>Anecdote with most votes</h1>
+                <p>{props.anecdotes[getTopAnecdote()]}</p>
+                <p>has {votes[getTopAnecdote()]} votes</p>
+            </section>
         </div>
     );
 };
