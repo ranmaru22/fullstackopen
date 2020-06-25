@@ -4,6 +4,11 @@ import "./index.css";
 
 const Button = props => <button onClick={props.onClick}>{props.text}</button>;
 
+const Statistic = props => props.value === 0
+    ? <p></p>
+    : <p>{props.text}: {props.value}</p>;
+    
+
 const Statistics = props => {
     const all = props.good + props.bad + props.neutral;
     const avg = (props.good - props.bad) / all;
@@ -13,13 +18,12 @@ const Statistics = props => {
         ? <p>No feedback given.</p>
         : (
             <div>
-                <h1>Statistics</h1>
-                <p>Good: {props.good}</p>
-                <p>Neutral: {props.neutral}</p>
-                <p>Bad: {props.bad}</p>
-                <p>All: {all}</p>
-                <p>Average: {avg}</p>
-                <p>Positive: {pos}</p>
+                <Statistic text="good" value={props.good} />
+                <Statistic text="neutral" value={props.neutral} />
+                <Statistic text="bad" value={props.bad} />
+                <Statistic text="all" value={all} />
+                <Statistic text="average" value={avg} />
+                <Statistic text="positive" value={pos} />
             </div>
         );
 
@@ -33,7 +37,6 @@ const App = () => {
     const clickHandlerGood = () => setGood(good + 1);
     const clickHandlerNeutral = () => setNeutral(neutral + 1);
     const clickHandlerBad = () => setBad(bad + 1);
-
 
     return (
         <div>
