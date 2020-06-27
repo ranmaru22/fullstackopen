@@ -6,17 +6,14 @@ const Header = ({ name }) => {
 };
 
 const Total = ({ parts }) => {
-    const sum =
-        parts[0].exercises +
-        parts[1].exercises +
-        parts[2].exercises;
+    const sum = parts.reduce((acc, part) => acc + part.exercises, 0);
     return <p>Number of exercises {sum}</p>;
 };
 
-const Part = (props) => {
+const Part = ({ part }) => {
     return (
         <p>
-            {props.part.name} {props.part.exercises}
+            {part.name} {part.exercises}
         </p>
     );
 };
@@ -24,9 +21,7 @@ const Part = (props) => {
 const Content = ({ parts }) => {
     return (
         <div>
-            <Part part={parts[0]} />
-            <Part part={parts[1]} />
-            <Part part={parts[2]} />
+            {parts.map(part => <Part key={part.id} part={part} />)}
         </div>
     );
 };
