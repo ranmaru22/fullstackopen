@@ -4,11 +4,20 @@ const App = () => {
     const [ persons, setPersons ] = useState([{ name: "Arto Hellas" }]);
     const [ newName, setNewName ] = useState("");
 
+    const isValidEntry = name => {
+        const nameIndex = persons.map(x => x.name).indexOf(name);
+        return nameIndex === -1;
+    }
+
     const addToPhonebook = e => {
         e.preventDefault();
-        const newPerson = { name: newName };
-        setPersons(persons.concat(newPerson));
-        setNewName("");
+        if (isValidEntry(newName)) {
+            const newPerson = { name: newName };
+            setPersons(persons.concat(newPerson));
+            setNewName("");
+        } else {
+            alert(`${newName} is already in the phonebook!`);
+        }
     };
 
     const newNameHandler = e => setNewName(e.target.value);
