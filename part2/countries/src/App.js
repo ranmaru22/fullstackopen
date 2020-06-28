@@ -26,8 +26,8 @@ const Weather = ({ city, countryCode }) => {
     }
 };
 
-const Details = ({ country, isHidden=false }) => (
-    <section id={country.alpha3Code} style={{display: isHidden ? "none" : "block"}}>
+const Details = ({ country }) => (
+    <section id={country.alpha3Code}>
         <h2>{country.name}</h2>
         <p>Demonym: {country.demonym}</p>
         <p>Capital: {country.capital}</p>
@@ -41,11 +41,20 @@ const Details = ({ country, isHidden=false }) => (
     </section>
 );
 
-const Results = ({ returnData }) => {
-    const showDetails = country => () => {
-        document.querySelector(`#${country.alpha3Code}`).setAttribute("style", "display: block;");
-    };
+const CountryListEntry = ({ country }) => {
+    const [clicked, setClicked] = useState(false);
+    const handleClick = () => setClicked(!clicked);
 
+    return (
+        <li>
+            {country.name}
+            <button onClick={handleClick}>{clicked ? "Hide" : "Show"} Details</button>
+            {clicked ? <Details country={country} /> : null }
+        </li>
+    );
+};
+
+const Results = ({ returnData }) => {
     if (returnData.length === 0) {
         return <p>No results.</p>;
     } else if (returnData.length > 10) {
@@ -56,11 +65,7 @@ const Results = ({ returnData }) => {
         return (
             <ul>
                 {returnData.map(elem =>
-                    <li key={elem.alpha3Code}>
-                        {elem.name}
-                        <button onClick={showDetails(elem)}>Show Details</button>
-                        <Details country={elem} isHidden={true} />
-                    </li>
+                    <CountryListEntry country={elem} key={elem.alpha3Code} />
                 )}
             </ul>
         );
