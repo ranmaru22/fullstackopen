@@ -1,6 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import axios from "axios";
 
+const apiKey = process.env.REACT_APP_WEATHER_API_KEY;
+
+const Weather = ({ city, countryCode }) => {
+    const [weather, setWeather] = useState({});
+
+    useEffect(() => {
+        axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${city},${countryCode}&appid=${apiKey}&units=metric`)
+            .then(result => { setWeather(result.data); })
+            .catch(() => { setWeather({}); });
+    }, [city, countryCode]);
+
+    if (Object.entries(weather).length > 0) {
+        return (
+            <div>
+                <h3>Weather in {city}</h3>
+                <p>Temperature: {weather.main?.temp} C</p>
+                <p>Condition: {weather.weather?.[0].description}</p>
+                <p>Wind: {weather.wind?.speed} m/sec</p>
+            </div>
+        );
+    } else {
+        return <p>Couldn't load weather data. :(</p>;
+    }
+};
+
 const Details = ({ country, isHidden=false }) => (
     <section id={country.alpha3Code} style={{display: isHidden ? "none" : "block"}}>
         <h2>{country.name}</h2>
@@ -12,6 +37,7 @@ const Details = ({ country, isHidden=false }) => (
             {country.languages.map(elem => <li key={elem.iso639_1}> {elem.name} </li>)}
         </ul>
         <img src={country.flag} alt={`Flag of ${country.name}`} width="100" />
+        <Weather city={country.capital} countryCode={country.alpha2Code} />
     </section>
 );
 
