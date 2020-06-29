@@ -12,4 +12,9 @@ const createEntry = async (dataObj) => {
     return res.data;
 };
 
-export default { getAll, createEntry };
+const deleteEntry = async id => {
+    const res = await axios.delete(`${baseUri}/${id}`);
+    return res;
+};
+
+export default { getAll, createEntry, deleteEntry };
