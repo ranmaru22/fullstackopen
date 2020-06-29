@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 
 import Filter from "./filter";
 import PersonForm from "./personform";
 import Persons from "./persons";
 
-const baseUri = "http://localhost:3888/persons";
+import personService from "./services/personService";
 
 const App = () => {
     const [ persons, setPersons ] = useState(new Array(0));
@@ -15,10 +14,14 @@ const App = () => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const res = await axios.get(baseUri);
-            setPersons(res.data);
+            const persons = await personService.getAll();
+            setPersons(persons);
         };
-        fetchData();
+        try {
+            fetchData();
+        } catch (error) {
+            console.error("Could not fetch data from server.");
+        }
     }, []);
 
     const isValidEntry = name => {
@@ -30,8 +33,8 @@ const App = () => {
         e.preventDefault();
         if (isValidEntry(newName)) {
             const newPerson = { name: newName, number: newNumber };
-            const res = await axios.post(baseUri, newPerson);
-            setPersons(persons.concat(res.data));
+            const addedPerson = await personService.createEntry(newPerson);
+            setPersons(persons.concat(addedPerson));
             setNewName("");
             setNewNumber("");
         } else {
