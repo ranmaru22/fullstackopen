@@ -7,7 +7,7 @@ const getAll = async () => {
     return res.data;
 };
 
-const createEntry = async (dataObj) => {
+const createEntry = async dataObj => {
     const res = await axios.post(baseUri, dataObj);
     return res.data;
 };
@@ -17,4 +17,9 @@ const deleteEntry = async id => {
     return res;
 };
 
-export default { getAll, createEntry, deleteEntry };
+const updateEntry = async (id, patchData) => {
+    const res = await axios.patch(`${baseUri}/${id}`, patchData);
+    return res.data;
+};
+
+export default { getAll, createEntry, deleteEntry, updateEntry };

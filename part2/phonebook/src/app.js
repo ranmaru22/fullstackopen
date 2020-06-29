@@ -24,26 +24,32 @@ const App = () => {
         }
     }, []);
 
-    const isValidEntry = name => {
-        const nameIndex = persons.map(x => x.name).indexOf(name);
-        return nameIndex === -1;
-    }
+    const isAlreadyInPhonebook = name => persons.find(p => p.name === name);
 
-    const addToPhonebook = async e => {
+    const addOrUpdate = async e => {
         e.preventDefault();
-        if (isValidEntry(newName)) {
+        const found = isAlreadyInPhonebook(newName);
+        if (!found) {
             try {
                 const newPerson = { name: newName, number: newNumber };
                 const addedPerson = await personService.createEntry(newPerson);
                 setPersons(persons.concat(addedPerson));
-                setNewName("");
-                setNewNumber("");
             } catch (error) {
                 console.error("Error adding entry to phonebook.");
             }
         } else {
-            alert(`${newName} is already in the phonebook!`);
+            if (window.confirm(`${found.name} is already in the phonebook. Update the number?`)) {
+                try {
+                    const patchData = { number: newNumber };
+                    const updatedPerson = await personService.updateEntry(found.id, patchData);
+                    setPersons(persons.map(p => p.name === updatedPerson.name ? updatedPerson : p));
+                } catch (error) {
+                    console.error("Error updating entry.");
+                }
+            }
         }
+        setNewName("");
+        setNewNumber("");
     };
 
     const deleteFromPhonebook = async entry => {
@@ -72,7 +78,7 @@ const App = () => {
             <h1>Phonebook</h1>
             <Filter value={filterVal} handlerFunction={setFilter} />
             <h2>Add new</h2>
-            <PersonForm formFields={formFields} handlerFunction={addToPhonebook} />
+            <PersonForm formFields={formFields} handlerFunction={addOrUpdate} />
             <h2>Numbers</h2>
             <Persons persons={persons} filterVal={filterVal} deleteFunction={deleteFromPhonebook} />
         </div>
