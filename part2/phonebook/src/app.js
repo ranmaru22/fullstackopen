@@ -5,24 +5,33 @@ import Filter from "./filter";
 import PersonForm from "./personform";
 import Persons from "./persons";
 
+const baseUri = "http://localhost:3888/persons";
+
 const App = () => {
     const [ persons, setPersons ] = useState(new Array(0));
     const [ newName, setNewName ] = useState("");
     const [ newNumber, setNewNumber ] = useState("");
     const [ filterVal, setFilterVal ] = useState("");
 
-    useEffect(() => axios.get("http://localhost:3001/persons").then(res => setPersons(res.data)), []);
+    useEffect(() => {
+        const fetchData = async () => {
+            const res = await axios.get(baseUri);
+            setPersons(res.data);
+        };
+        fetchData();
+    }, []);
 
     const isValidEntry = name => {
         const nameIndex = persons.map(x => x.name).indexOf(name);
         return nameIndex === -1;
     }
 
-    const addToPhonebook = e => {
+    const addToPhonebook = async e => {
         e.preventDefault();
         if (isValidEntry(newName)) {
             const newPerson = { name: newName, number: newNumber };
-            setPersons(persons.concat(newPerson));
+            const res = await axios.post(baseUri, newPerson);
+            setPersons(persons.concat(res.data));
             setNewName("");
             setNewNumber("");
         } else {
