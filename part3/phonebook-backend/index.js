@@ -28,6 +28,11 @@ let persons = [
 
 app.use(express.json());
 
+app.get("/info", (req, res) => {
+    res.set("Content-Type", "text/plain");
+    res.send(`Phonebook has info for ${persons.length} people.\n\n${new Date()}`);
+});
+
 app.get("/api/persons", (req, res) => {
     res.json(persons);
 });
