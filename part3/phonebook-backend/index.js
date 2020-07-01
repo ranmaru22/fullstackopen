@@ -28,6 +28,13 @@ let persons = [
 
 app.use(express.json());
 
+const getRandomId = seed => {
+    const baseId = Number(Math.random().toString().slice(2,12));
+    return baseId + seed.split("").reduce((acc, _, i) => acc + seed.charCodeAt(i), 0);
+};
+
+app.use(express.json());
+
 app.get("/info", (req, res) => {
     res.set("Content-Type", "text/plain");
     res.send(`Phonebook has info for ${persons.length} people.\n\n${new Date()}`);
@@ -35,6 +42,12 @@ app.get("/info", (req, res) => {
 
 app.get("/api/persons", (req, res) => {
     res.json(persons);
+});
+
+app.post("/api/persons", (req, res) => {
+    const newPerson = { name: req.body.name, number: req.body.number, id: getRandomId(req.body.name) };
+    persons = persons.concat(newPerson);
+    res.status(201).json(newPerson);
 });
 
 app.get("/api/persons/:id", (req, res) => {
