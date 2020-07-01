@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const baseUri = "http://localhost:3888/persons";
+// const baseUri = "http://localhost:3888/persons";
+const baseUri = "https://dudley-mountie-41241.herokuapp.com/api/persons";
 
 const getAll = async () => {
     const res = await axios.get(baseUri);
