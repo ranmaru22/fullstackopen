@@ -45,15 +45,21 @@ app.get("/api/persons", (req, res) => {
 });
 
 app.post("/api/persons", (req, res) => {
-    const newPerson = { name: req.body.name, number: req.body.number, id: getRandomId(req.body.name) };
-    persons = persons.concat(newPerson);
-    res.status(201).json(newPerson);
+    if (!req.body.name || !req.body.number) {
+        res.status(400).json({ error: "Must provide name and number." });
+    } else if (persons.find(p => p.name === req.body.name)) {
+        res.status(400).json({ error: "An entry with that name already exists." });
+    } else {
+        const newPerson = { name: req.body.name, number: req.body.number, id: getRandomId(req.body.name) };
+        persons = persons.concat(newPerson);
+        res.status(201).json(newPerson);
+    }
 });
 
 app.get("/api/persons/:id", (req, res) => {
     const person = persons.find(p => Number(req.params.id) === p.id);
     if (!person) {
-        res.status(404).end();
+        res.status(404).json({ error: "Entry not found."});
     } else {
         res.json(person);
     }
@@ -62,7 +68,7 @@ app.get("/api/persons/:id", (req, res) => {
 app.delete("/api/persons/:id", (req, res) => {
     const person = persons.find(p => Number(req.params.id) === p.id);
     if (!person) {
-        res.status(404).end();
+        res.status(404).json({ error: "Entry not found."});
     } else {
         persons = persons.filter(p => p !== person);
         res.status(204).end();
