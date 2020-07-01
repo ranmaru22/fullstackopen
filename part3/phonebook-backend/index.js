@@ -39,6 +39,7 @@ const getRandomId = seed => {
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(express.static("build"));
 app.use(morgan((tokens, req, res) => [
     tokens.method(req, res),
     tokens.url(req, res),
