@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 import morgan from "morgan";
 
 const app = express();
@@ -36,6 +37,7 @@ const getRandomId = seed => {
 };
 
 // Middleware
+app.use(cors());
 app.use(express.json());
 app.use(morgan((tokens, req, res) => [
     tokens.method(req, res),
