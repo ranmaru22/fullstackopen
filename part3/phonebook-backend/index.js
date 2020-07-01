@@ -1,6 +1,7 @@
 import express from "express";
-const app = express();
+import morgan from "morgan";
 
+const app = express();
 const PORT = 3001;
 
 let persons = [
@@ -26,15 +27,19 @@ let persons = [
     }
 ];
 
-app.use(express.json());
+// Define utility functions
+const unknownEndpoint = (req, res) => res.status(404).send({ error: "unknown endpoint "});
 
 const getRandomId = seed => {
     const baseId = Number(Math.random().toString().slice(2,12));
     return baseId + seed.split("").reduce((acc, _, i) => acc + seed.charCodeAt(i), 0);
 };
 
+// Middleware
+app.use(morgan("tiny"));
 app.use(express.json());
 
+// Routes
 app.get("/info", (req, res) => {
     res.set("Content-Type", "text/plain");
     res.send(`Phonebook has info for ${persons.length} people.\n\n${new Date()}`);
@@ -75,4 +80,8 @@ app.delete("/api/persons/:id", (req, res) => {
     }
 });
 
+// Catch unknown endpoints
+app.use(unknownEndpoint);
+
+// Start server
 app.listen(PORT, () => console.log(`Server up and running on port ${PORT}`));
