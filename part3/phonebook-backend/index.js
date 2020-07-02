@@ -5,39 +5,11 @@ import morgan from "morgan";
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-let persons = [
-    {
-        name: "Arto Hellas",
-        number: "040-123456",
-        id: 1,
-    },
-    {
-        name: "Ada Lovelace",
-        number: "39-44-5323523",
-        id: 2,
-    },
-    {
-        name: "Dan Abramov",
-        number: "12-43-234345",
-        id: 3,
-    },
-    {
-        name: "Mary Poppendieck",
-        number: "39-23-6423122",
-        id: 4,
-    },
-];
+import Person from "./models/people.js";
 
 // Define utility functions
 const unknownEndpoint = (req, res) =>
     res.status(404).send({ error: "unknown endpoint " });
-
-const getRandomId = (seed) => {
-    const baseId = Number(Math.random().toString().slice(2, 12));
-    return (
-        baseId + seed.split("").reduce((acc, _, i) => acc + seed.charCodeAt(i), 0)
-    );
-};
 
 // Middleware
 app.use(cors());
@@ -54,8 +26,8 @@ app.use(
             tokens["response-time"](req, res),
             "ms",
             Object.keys(req.body).length > 0
-            ? "\n-> " + JSON.stringify(req.body)
-            : "",
+                ? "\n-> " + JSON.stringify(req.body)
+                : ""
         ].join(" ")
     )
 );
@@ -63,31 +35,31 @@ app.use(
 // Routes
 app.get("/info", (req, res) => {
     res.set("Content-Type", "text/plain");
-    res.send(`Phonebook has info for ${persons.length} people.\n\n${new Date()}`);
+    res.send(
+        `Phonebook has info for ${persons.length} people.\n\n${new Date()}`
+    );
 });
 
-app.get("/api/persons", (req, res) => {
-    res.json(persons);
+app.get("/api/persons", async (req, res) => {
+    const results = await Person.find().exec();
+    res.json(results);
 });
 
-app.post("/api/persons", (req, res) => {
+app.post("/api/persons", async (req, res) => {
     if (!req.body.name || !req.body.number) {
         res.status(400).json({ error: "Must provide name and number." });
-    } else if (persons.find((p) => p.name === req.body.name)) {
-        res.status(400).json({ error: "An entry with that name already exists." });
     } else {
-        const newPerson = {
+        const newPerson = new Person({
             name: req.body.name,
-            number: req.body.number,
-            id: getRandomId(req.body.name),
-        };
-        persons = persons.concat(newPerson);
+            number: req.body.number
+        });
+        await newPerson.save();
         res.status(201).json(newPerson);
     }
 });
 
-app.get("/api/persons/:id", (req, res) => {
-    const person = persons.find((p) => Number(req.params.id) === p.id);
+app.get("/api/persons/:id", async (req, res) => {
+    const person = await Person.findById(req.params.id).exec();
     if (!person) {
         res.status(404).json({ error: "Entry not found." });
     } else {
@@ -95,12 +67,12 @@ app.get("/api/persons/:id", (req, res) => {
     }
 });
 
-app.delete("/api/persons/:id", (req, res) => {
-    const person = persons.find((p) => Number(req.params.id) === p.id);
+app.delete("/api/persons/:id", async (req, res) => {
+    const person = await Person.findById(req.params.id).exec();
     if (!person) {
         res.status(404).json({ error: "Entry not found." });
     } else {
-        persons = persons.filter((p) => p !== person);
+        persons = persons.filter(p => p !== person);
         res.status(204).end();
     }
 });
