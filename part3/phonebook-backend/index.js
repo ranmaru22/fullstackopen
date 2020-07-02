@@ -72,7 +72,7 @@ app.delete("/api/persons/:id", async (req, res) => {
     if (!person) {
         res.status(404).json({ error: "Entry not found." });
     } else {
-        persons = persons.filter(p => p !== person);
+        await person.delete();
         res.status(204).end();
     }
 });
