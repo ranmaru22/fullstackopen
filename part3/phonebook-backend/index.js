@@ -11,6 +11,16 @@ import Person from "./models/people.js";
 const unknownEndpoint = (req, res) =>
     res.status(404).send({ error: "unknown endpoint " });
 
+const errorHandler = (err, req, res, next) => {
+    console.error(err.message);
+    switch (err.name) {
+        case "CastError":
+            return res.status(400).send({ error: "Malformatted ID." });
+        default:
+            next(err);
+    }
+};
+
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -40,45 +50,64 @@ app.get("/info", (req, res) => {
     );
 });
 
-app.get("/api/persons", async (req, res) => {
-    const results = await Person.find().exec();
-    res.json(results);
+app.get("/api/persons", async (req, res, next) => {
+    try {
+        const results = await Person.find().exec();
+        res.json(results);
+    } catch (err) {
+        next(err);
+    }
 });
 
-app.post("/api/persons", async (req, res) => {
+app.post("/api/persons", async (req, res, next) => {
     if (!req.body.name || !req.body.number) {
         res.status(400).json({ error: "Must provide name and number." });
     } else {
-        const newPerson = new Person({
-            name: req.body.name,
-            number: req.body.number
-        });
-        await newPerson.save();
-        res.status(201).json(newPerson);
+        try {
+            const newPerson = new Person({
+                name: req.body.name,
+                number: req.body.number
+            });
+            await newPerson.save();
+            res.status(201).json(newPerson);
+        } catch (err) {
+            next(err);
+        }
     }
 });
 
-app.get("/api/persons/:id", async (req, res) => {
-    const person = await Person.findById(req.params.id).exec();
-    if (!person) {
-        res.status(404).json({ error: "Entry not found." });
-    } else {
-        res.json(person);
+app.get("/api/persons/:id", async (req, res, next) => {
+    try {
+        const person = await Person.findById(req.params.id).exec();
+        if (!person) {
+            res.status(404).json({ error: "Entry not found." });
+        } else {
+            res.json(person);
+        }
+    } catch (err) {
+        next(err);
     }
 });
 
-app.delete("/api/persons/:id", async (req, res) => {
-    const person = await Person.findById(req.params.id).exec();
-    if (!person) {
-        res.status(404).json({ error: "Entry not found." });
-    } else {
-        await person.delete();
-        res.status(204).end();
+app.delete("/api/persons/:id", async (req, res, next) => {
+    try {
+        const person = await Person.findById(req.params.id).exec();
+        if (!person) {
+            res.status(404).json({ error: "Entry not found." });
+        } else {
+            await person.delete();
+            res.status(204).end();
+        }
+    } catch (err) {
+        next(err);
     }
 });
 
 // Catch unknown endpoints
 app.use(unknownEndpoint);
+
+// Catch errors
+app.use(errorHandler);
 
 // Start server
 app.listen(PORT, () => console.log(`Server up and running on port ${PORT}`));
