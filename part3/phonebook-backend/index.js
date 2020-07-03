@@ -102,7 +102,7 @@ app.patch("/api/persons/:id", async (req, res, next) => {
         const updatedPerson = await Person.findByIdAndUpdate(
             req.params.id,
             patch,
-            { new: true }
+            { new: true, runValidators: true }
         ).exec();
         if (!updatedPerson) {
             res.status(404).json({ error: "Entry not found." });
