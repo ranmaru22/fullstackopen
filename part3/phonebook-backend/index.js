@@ -45,7 +45,7 @@ app.use(
 );
 
 // Routes
-app.get("/info", async (req, res) => {
+app.get("/info", async (req, res, next) => {
     try {
         const personCount = await Person.countDocuments().exec();
         res.set("Content-Type", "text/plain");

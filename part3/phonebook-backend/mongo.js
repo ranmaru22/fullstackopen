@@ -36,7 +36,7 @@ if (process.argv.length === 3) {
         name: process.argv[3],
         number: process.argv[4]
     });
-    newPerson.save().then(result => {
+    newPerson.save().then(() => {
         console.log("Entry saved.");
         console.log(`${newPerson.name} ${newPerson.number}`);
         mongoose.connection.close();

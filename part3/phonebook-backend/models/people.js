@@ -10,7 +10,7 @@ mongoose
         useFindAndModify: false,
         useCreateIndex: true
     })
-    .then(result => console.log("Connected to MongoDB"))
+    .then(() => console.log("Connected to MongoDB"))
     .catch(error => console.log("MongoDB connection error", error.message));
 
 const personSchema = new mongoose.Schema({
