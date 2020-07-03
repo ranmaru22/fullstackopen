@@ -89,6 +89,24 @@ app.get("/api/persons/:id", async (req, res, next) => {
     }
 });
 
+app.patch("/api/persons/:id", async (req, res, next) => {
+    try {
+        const patch = { number: req.body.number };
+        const updatedPerson = await Person.findByIdAndUpdate(
+            req.params.id,
+            patch,
+            { new: true }
+        ).exec();
+        if (!updatedPerson) {
+            res.status(404).json({ error: "Entry not found." });
+        } else {
+            res.status(200).json(updatedPerson);
+        }
+    } catch (err) {
+        next(err);
+    }
+});
+
 app.delete("/api/persons/:id", async (req, res, next) => {
     try {
         const person = await Person.findById(req.params.id).exec();

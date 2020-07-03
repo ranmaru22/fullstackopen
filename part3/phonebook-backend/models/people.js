@@ -2,7 +2,12 @@ import mongoose from "mongoose";
 
 const dbUri = process.env.MONGODB_URI;
 
-mongoose.connect(dbUri, {useNewUrlParser: true, useUnifiedTopology: true})
+mongoose
+    .connect(dbUri, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        useFindAndModify: false
+    })
     .then(result => console.log("Connected to MongoDB"))
     .catch(error => console.log("MongoDB connection error", error.message));
 
