@@ -43,11 +43,16 @@ app.use(
 );
 
 // Routes
-app.get("/info", (req, res) => {
-    res.set("Content-Type", "text/plain");
-    res.send(
-        `Phonebook has info for ${persons.length} people.\n\n${new Date()}`
-    );
+app.get("/info", async (req, res) => {
+    try {
+        const personCount = await Person.countDocuments().exec();
+        res.set("Content-Type", "text/plain");
+        res.send(
+            `Phonebook has info for ${personCount} people.\n\n${new Date()}`
+        );
+    } catch (err) {
+        next(err);
+    }
 });
 
 app.get("/api/persons", async (req, res, next) => {
