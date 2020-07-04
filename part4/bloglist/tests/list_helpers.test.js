@@ -87,12 +87,22 @@ describe("totalLikes function", () => {
 describe("favorite function", () => {
     test("when list has only one entry, it returns that entry", () => {
         const result = listHelpers.favorite(listWithOneBlog);
-        expect(result).toStrictEqual(listWithOneBlog[0]);
+        const ret = { ...listWithOneBlog[0] };
+        expect(result).toStrictEqual({
+            title: ret.title,
+            author: ret.author,
+            likes: ret.likes
+        });
     });
 
     test("when the list has many entries, it returns the one with the most likes", () => {
         const result = listHelpers.favorite(blogs);
-        expect(result).toStrictEqual(blogs[2]);
+        const ret = { ...blogs[2] };
+        expect(result).toStrictEqual({
+            title: ret.title,
+            author: ret.author,
+            likes: ret.likes
+        });
     });
 
     test("when the list is empty, it returns an empty object", () => {
