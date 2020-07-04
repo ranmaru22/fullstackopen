@@ -82,6 +82,11 @@ describe("totalLikes function", () => {
         const result = listHelpers.totalLikes(blogs);
         expect(result).toBe(36);
     });
+
+    test("when the list is empty, it returns 0", () => {
+        const result = listHelpers.totalLikes([]);
+        expect(result).toBe(0);
+    });
 });
 
 describe("favorite function", () => {
