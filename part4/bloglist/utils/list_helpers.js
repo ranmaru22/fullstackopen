@@ -23,14 +23,32 @@ const mostBlogs = blogs => {
         return {};
     } else {
         const authors = blogs.map(b => b.author);
-        const likes = authors.map(a => {
+        const authorBlogs = authors.map(a => {
             const articles = blogs.filter(b => b.author === a);
             return { author: a, blogs: articles.length };
         });
-        return likes.reduce((max, val) => (val.blogs > max.blogs ? val : max), {
-            blogs: 0
+        return authorBlogs.reduce(
+            (max, val) => (val.blogs > max.blogs ? val : max),
+            {
+                blogs: 0
+            }
+        );
+    }
+};
+
+const mostLikes = blogs => {
+    if (blogs.length === 0) {
+        return {};
+    } else {
+        const authors = blogs.map(b => b.author);
+        const likes = authors.map(a => {
+            const articles = blogs.filter(b => b.author === a);
+            return { author: a, likes: totalLikes(articles) };
+        });
+        return likes.reduce((max, val) => (val.likes > max.likes ? val : max), {
+            likes: 0
         });
     }
 };
 
-export default { dummy, totalLikes, favorite, mostBlogs };
+export default { dummy, totalLikes, favorite, mostBlogs, mostLikes };

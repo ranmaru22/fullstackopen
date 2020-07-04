@@ -134,3 +134,22 @@ describe("most blogs function", () => {
         expect(result).toStrictEqual({});
     });
 });
+
+describe("most likes function", () => {
+    test("when list has one entry, it returns the author of that entry", () => {
+        const result = listHelpers.mostLikes(listWithOneBlog);
+        const ret = { ...listWithOneBlog[0] };
+        expect(result).toStrictEqual({ author: ret.author, likes: ret.likes });
+    });
+
+    test("when the list has many entries, it returns the author with the most blogs", () => {
+        const result = listHelpers.mostLikes(blogs);
+        const ret = { author: "Edsger W. Dijkstra", likes: 17 };
+        expect(result).toStrictEqual(ret);
+    });
+
+    test("when the list is empty, it returns an empty object", () => {
+        const result = listHelpers.mostLikes([]);
+        expect(result).toStrictEqual({});
+    });
+});
