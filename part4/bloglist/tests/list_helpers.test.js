@@ -110,3 +110,22 @@ describe("favorite function", () => {
         expect(result).toStrictEqual({});
     });
 });
+
+describe("most blogs function", () => {
+    test("when list has one entry, it returns the author of that entry", () => {
+        const result = listHelpers.mostBlogs(listWithOneBlog);
+        const ret = { ...listWithOneBlog[0] };
+        expect(result).toStrictEqual({ author: ret.author, blogs: 1 });
+    });
+
+    test("when the list has many entries, it returns the author with the most blogs", () => {
+        const result = listHelpers.mostBlogs(blogs);
+        const ret = { author: "Robert C. Martin", blogs: 3 };
+        expect(result).toStrictEqual(ret);
+    });
+
+    test("when the list is empty, it returns an empty object", () => {
+        const result = listHelpers.mostBlogs([]);
+        expect(result).toStrictEqual({});
+    });
+});

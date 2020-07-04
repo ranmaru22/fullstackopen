@@ -18,4 +18,19 @@ const favorite = blogs => {
     }
 };
 
-export default { dummy, totalLikes, favorite };
+const mostBlogs = blogs => {
+    if (blogs.length === 0) {
+        return {};
+    } else {
+        const authors = blogs.map(b => b.author);
+        const likes = authors.map(a => {
+            const articles = blogs.filter(b => b.author === a);
+            return { author: a, blogs: articles.length };
+        });
+        return likes.reduce((max, val) => (val.blogs > max.blogs ? val : max), {
+            blogs: 0
+        });
+    }
+};
+
+export default { dummy, totalLikes, favorite, mostBlogs };
