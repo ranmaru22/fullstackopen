@@ -45,6 +45,16 @@ describe("API tests", () => {
             expect.objectContaining(newPost)
         );
     });
+
+    it("initializes likes to 0 if not provided", async () => {
+        const newPost = {
+            author: "Some dude",
+            title: "Sample post",
+            url: "http://foo.bar"
+        };
+        const result = await api.post("/api/blogs").send(newPost).expect(201);
+        expect(result.body.likes).toBe(0);
+    });
 });
 
 afterAll(() => mongoose.connection.close());
