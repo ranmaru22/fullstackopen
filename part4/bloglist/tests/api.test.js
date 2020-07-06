@@ -31,6 +31,20 @@ describe("API tests", () => {
             expect(x.id).toBeDefined();
         });
     });
+
+    it("crates a new blog post from a valid POST request", async () => {
+        const newPost = {
+            author: "Some dude",
+            title: "Sample post",
+            url: "http://foo.bar"
+        };
+        await api.post("/api/blogs").send(newPost).expect(201);
+        const allEntries = await api.get("/api/blogs").expect(200);
+        expect(allEntries.body.length).toBe(helpers.blogs.length + 1);
+        expect(allEntries.body).toContainEqual(
+            expect.objectContaining(newPost)
+        );
+    });
 });
 
 afterAll(() => mongoose.connection.close());
