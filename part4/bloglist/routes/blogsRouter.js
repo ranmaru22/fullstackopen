@@ -12,7 +12,7 @@ router.get("/", async (req, res) => {
 router.post("/", async (req, res) => {
     const blog = new Blog(req.body);
     const result = await blog.save();
-    res.status(201).json(result);
+    res.status(201).json(result.toJSON());
 });
 
 export default router;

@@ -21,8 +21,15 @@ describe("API tests", () => {
     });
 
     it("returns notes from the database", async () => {
-        const result = await api.get("/api/blogs");
+        const result = await api.get("/api/blogs").expect(200);
         expect(result.body).toHaveLength(helpers.blogs.length);
+    });
+
+    it("returns the ID identifier as id instead of _id", async () => {
+        const result = await api.get("/api/blogs").expect(200);
+        result.body.forEach(x => {
+            expect(x.id).toBeDefined();
+        });
     });
 });
 
