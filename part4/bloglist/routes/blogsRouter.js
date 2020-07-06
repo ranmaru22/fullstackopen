@@ -10,9 +10,13 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-    const blog = new Blog(req.body);
-    const result = await blog.save();
-    res.status(201).json(result.toJSON());
+    if (!req.body.title || !req.body.url) {
+        res.status(400).end();
+    } else {
+        const blog = new Blog(req.body);
+        const result = await blog.save();
+        res.status(201).json(result.toJSON());
+    }
 });
 
 export default router;

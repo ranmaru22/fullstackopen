@@ -55,6 +55,21 @@ describe("API tests", () => {
         const result = await api.post("/api/blogs").send(newPost).expect(201);
         expect(result.body.likes).toBe(0);
     });
+
+    it("responds with 400 if title or URL are missing in POST", async () => {
+        const postWithoutTitle = {
+            author: "Some dude",
+            url: "http://foo.bar"
+        };
+        const postWithoutUrl = {
+            author: "Some dude",
+            title: "Sample post"
+        };
+        await api.post("/api/blogs").send(postWithoutTitle).expect(400);
+        await api.post("/api/blogs").send(postWithoutUrl).expect(400);
+        const allEntries = await api.get("/api/blogs").expect(200);
+        expect(allEntries.body.length).toBe(helpers.blogs.length);
+    });
 });
 
 afterAll(() => mongoose.connection.close());
