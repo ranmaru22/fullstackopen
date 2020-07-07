@@ -12,7 +12,7 @@ beforeEach(async () => {
     await Promise.all(blogsToBeSaved);
 });
 
-describe("API tests", () => {
+describe("basic connection", () => {
     it("connects to the database", async () => {
         await api
             .get("/api/blogs")
@@ -20,7 +20,7 @@ describe("API tests", () => {
             .expect("Content-Type", /application\/json/);
     });
 
-    it("returns notes from the database", async () => {
+    it("returns blogs from the database", async () => {
         const result = await api.get("/api/blogs").expect(200);
         expect(result.body).toHaveLength(helpers.blogs.length);
     });
@@ -31,7 +31,9 @@ describe("API tests", () => {
             expect(x.id).toBeDefined();
         });
     });
+});
 
+describe("adding blog posts", () => {
     it("crates a new blog post from a valid POST request", async () => {
         const newPost = {
             author: "Some dude",
@@ -69,6 +71,20 @@ describe("API tests", () => {
         await api.post("/api/blogs").send(postWithoutUrl).expect(400);
         const allEntries = await api.get("/api/blogs").expect(200);
         expect(allEntries.body.length).toBe(helpers.blogs.length);
+    });
+});
+
+describe.only("deleting blog posts", () => {
+    it("returns 404 on a DELETE request to an invalid ID", async () => {
+        const invalidId = "12345abcdef";
+        await api.delete(`/api/blogs/${invalidId}`).expect(404);
+    });
+
+    it("deletes a post on a valid DELETE request", async () => {
+        const id = helpers.blogs[0]._id;
+        await api.delete(`/api/blogs/${id}`).expect(204);
+        const allEntries = await api.get("/api/blogs").expect(200);
+        expect(allEntries.body.length).toBe(helpers.blogs.length - 1);
     });
 });
 
