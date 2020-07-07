@@ -25,4 +25,13 @@ app.use(express.json());
 // Set routes
 app.use("/api/blogs", blogsRouter);
 
+// Error handler
+app.use((err, req, res, next) => {
+    if (err.message.includes("CastError")) {
+        res.status(404).end();
+    } else {
+        next();
+    }
+});
+
 export default app;
