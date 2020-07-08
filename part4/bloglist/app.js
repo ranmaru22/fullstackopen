@@ -33,7 +33,9 @@ app.use((err, req, res, next) => {
     if (err.message.includes("CastError")) {
         res.status(404).json({ error: "not found" });
     } else if (err.message.includes("password too weak")) {
-        res.status(404).json({ error: err.message });
+        res.status(400).json({ error: err.message });
+    } else if (err.message.includes("User validation failed")) {
+        res.status(400).json({ error: err.message });
     } else {
         next();
     }
