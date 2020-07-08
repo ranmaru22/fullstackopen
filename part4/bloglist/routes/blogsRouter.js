@@ -1,9 +1,7 @@
 import express from "express";
-import mongoose from "mongoose";
-const router = express.Router();
-
-// Import models
 import Blog from "../models/blog.js";
+
+const router = express.Router();
 
 router.get("/", async (req, res) => {
     const response = await Blog.find().exec();
