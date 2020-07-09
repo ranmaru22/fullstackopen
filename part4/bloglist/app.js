@@ -7,6 +7,7 @@ import cors from "cors";
 // Import routes
 import blogsRouter from "./routes/blogsRouter.js";
 import userRouter from "./routes/userRouter.js";
+import loginRouter from "./routes/loginRouter.js";
 
 const app = express();
 
@@ -27,6 +28,7 @@ app.use(express.json());
 // Set routes
 app.use("/api/blogs", blogsRouter);
 app.use("/api/user", userRouter);
+app.use("/api/login", loginRouter);
 
 // Error handler
 app.use((err, req, res, next) => {
