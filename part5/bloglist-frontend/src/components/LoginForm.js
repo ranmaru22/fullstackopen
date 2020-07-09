@@ -10,6 +10,7 @@ const LoginForm = ({ setUserFn }) => {
         const user = await loginService.login({ username, password });
         if (user) {
             setUserFn(user);
+            window.localStorage.setItem("blogAppUser", JSON.stringify(user));
         }
     };
 
