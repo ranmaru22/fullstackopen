@@ -209,8 +209,11 @@ describe("updating blog posts", () => {
             .set("Authorization", `Bearer ${token}`)
             .send(patch)
             .expect(401);
-        const allEntries = await api.get("/api/blogs").expect(200);
-        expect(allEntries.body).toHaveLength(helpers.blogs.length);
+        const blogInQuestion = await api.get(`/api/blogs/${id}`).expect(200);
+        const expected = { id, likes: helpers.blogs[0].likes };
+        expect(blogInQuestion.body).toStrictEqual(
+            expect.objectContaining(expected)
+        );
         done();
     });
 
