@@ -1,6 +1,7 @@
 {
     "parserOptions": {
-        "sourceType": "module"
+        "sourceType": "module",
+        "parser": "babel-eslint"
     },
     "env": {
         "commonjs": true,
