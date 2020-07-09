@@ -12,7 +12,7 @@ const isValidPassword = password => {
 };
 
 router.get("/", async (req, res) => {
-    const users = await User.find().exec();
+    const users = await User.find().populate("blogs", "-user").exec();
     res.status(200).json(users);
 });
 
@@ -29,6 +29,16 @@ router.post("/", async (req, res) => {
         });
         const newUser = await user.save();
         res.status(201).json(newUser);
+    }
+});
+
+router.delete("/:id", async (req, res) => {
+    const user = await User.findById(req.params.id).exec();
+    if (!user) {
+        res.status(404).end();
+    } else {
+        await User.findByIdAndRemove(req.params.id);
+        res.status(204).end();
     }
 });
 

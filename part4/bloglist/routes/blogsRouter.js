@@ -1,10 +1,11 @@
 import express from "express";
 import Blog from "../models/blog.js";
+import User from "../models/user.js";
 
 const router = express.Router();
 
 router.get("/", async (req, res) => {
-    const response = await Blog.find().exec();
+    const response = await Blog.find().populate("user", "-blogs").exec();
     res.json(response);
 });
 
@@ -12,8 +13,10 @@ router.post("/", async (req, res) => {
     if (!req.body.title || !req.body.url) {
         res.status(400).end();
     } else {
-        const blog = new Blog(req.body);
+        const user = await User.findOne({}).exec();
+        const blog = new Blog({ user, ...req.body });
         const result = await blog.save();
+        await User.findByIdAndUpdate(user.id, { $push: { blogs: blog } });
         res.status(201).json(result.toJSON());
     }
 });

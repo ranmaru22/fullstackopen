@@ -3,8 +3,9 @@ import uniqueValidator from "mongoose-unique-validator";
 
 const userSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true, minlength: 3 },
-    name: String,
-    passwordHash: { type: String, required: true }
+    name: { type: String, minlength: 3 },
+    passwordHash: { type: String, required: true },
+    blogs: [{ type: mongoose.Schema.ObjectId, ref: "Blog" }]
 });
 
 userSchema.set("toJSON", {
