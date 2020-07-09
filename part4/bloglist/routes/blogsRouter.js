@@ -62,12 +62,21 @@ router.patch("/:id", async (req, res) => {
     if (!blog) {
         res.status(404).end();
     } else {
-        const patchedBlog = await Blog.findByIdAndUpdate(
-            req.params.id,
-            req.body,
-            { new: true }
-        ).exec();
-        res.status(200).json(patchedBlog);
+        const decodedToken = req.token
+            ? jwt.verify(req.token, process.env.JWT_SECRET)
+            : null;
+        if (!req.token || !decodedToken.id) {
+            res.status(401).json({ error: "token missing" });
+        } else if (!blog.user.equals(decodedToken.id)) {
+            res.status(401).json({ error: "not authorized" });
+        } else {
+            const patchedBlog = await Blog.findByIdAndUpdate(
+                req.params.id,
+                req.body,
+                { new: true }
+            ).exec();
+            res.status(200).json(patchedBlog);
+        }
     }
 });
 
