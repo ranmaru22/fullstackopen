@@ -43,8 +43,17 @@ router.delete("/:id", async (req, res) => {
     if (!blog) {
         res.status(404).end();
     } else {
-        await Blog.findByIdAndRemove(req.params.id);
-        res.status(204).end();
+        const decodedToken = req.token
+            ? jwt.verify(req.token, process.env.JWT_SECRET)
+            : null;
+        if (!req.token || !decodedToken.id) {
+            res.status(401).json({ error: "token missing" });
+        } else if (!blog.user.equals(decodedToken.id)) {
+            res.status(401).json({ error: "not authorized" });
+        } else {
+            await Blog.findByIdAndRemove(req.params.id);
+            res.status(204).end();
+        }
     }
 });
 
