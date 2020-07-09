@@ -51,6 +51,8 @@ router.delete("/:id", async (req, res) => {
         } else if (!blog.user.equals(decodedToken.id)) {
             res.status(401).json({ error: "not authorized" });
         } else {
+            const user = await User.findOne(blog.user).exec();
+            await user.update({ $pull: { blogs: blog._id } });
             await Blog.findByIdAndRemove(req.params.id);
             res.status(204).end();
         }
