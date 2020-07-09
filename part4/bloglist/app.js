@@ -38,6 +38,8 @@ app.use((err, req, res, next) => {
         res.status(400).json({ error: err.message });
     } else if (err.message.includes("User validation failed")) {
         res.status(400).json({ error: err.message });
+    } else if (err.name.includes("JsonWebTokenError")) {
+        res.status(401).json({ error: "invalid token" });
     } else {
         next();
     }

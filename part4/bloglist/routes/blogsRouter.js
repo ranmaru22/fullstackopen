@@ -1,8 +1,16 @@
 import express from "express";
+import jwt from "jsonwebtoken";
 import Blog from "../models/blog.js";
 import User from "../models/user.js";
 
 const router = express.Router();
+
+const getToken = req => {
+    const authHeader = req.get("authorization");
+    return authHeader && authHeader.toLowerCase().startsWith("bearer ")
+        ? authHeader.slice(7)
+        : null;
+};
 
 router.get("/", async (req, res) => {
     const response = await Blog.find().populate("user", "-blogs").exec();
@@ -13,11 +21,20 @@ router.post("/", async (req, res) => {
     if (!req.body.title || !req.body.url) {
         res.status(400).end();
     } else {
-        const user = await User.findOne({}).exec();
-        const blog = new Blog({ user, ...req.body });
-        const result = await blog.save();
-        await User.findByIdAndUpdate(user.id, { $push: { blogs: blog } });
-        res.status(201).json(result.toJSON());
+        const token = getToken(req);
+        const decodedToken = token
+            ? jwt.verify(token, process.env.JWT_SECRET)
+            : null;
+        console.log(decodedToken);
+        if (!token || !decodedToken.id) {
+            res.status(401).json({ error: "token missing" });
+        } else {
+            const user = await User.findById(decodedToken.id).exec();
+            const blog = new Blog({ user: user.id, ...req.body });
+            const result = await blog.save();
+            await User.findByIdAndUpdate(user.id, { $push: { blogs: blog } });
+            res.status(201).json(result.toJSON());
+        }
     }
 });
 
