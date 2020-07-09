@@ -5,13 +5,6 @@ import User from "../models/user.js";
 
 const router = express.Router();
 
-const getToken = req => {
-    const authHeader = req.get("authorization");
-    return authHeader && authHeader.toLowerCase().startsWith("bearer ")
-        ? authHeader.slice(7)
-        : null;
-};
-
 router.get("/", async (req, res) => {
     const response = await Blog.find().populate("user", "-blogs").exec();
     res.json(response);
@@ -21,12 +14,10 @@ router.post("/", async (req, res) => {
     if (!req.body.title || !req.body.url) {
         res.status(400).end();
     } else {
-        const token = getToken(req);
-        const decodedToken = token
-            ? jwt.verify(token, process.env.JWT_SECRET)
+        const decodedToken = req.token
+            ? jwt.verify(req.token, process.env.JWT_SECRET)
             : null;
-        console.log(decodedToken);
-        if (!token || !decodedToken.id) {
+        if (!req.token || !decodedToken.id) {
             res.status(401).json({ error: "token missing" });
         } else {
             const user = await User.findById(decodedToken.id).exec();

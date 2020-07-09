@@ -3,6 +3,7 @@ import express from "express";
 import "express-async-errors";
 import mongoose from "mongoose";
 import cors from "cors";
+import mw from "./utils/middleware.js";
 
 // Import routes
 import blogsRouter from "./routes/blogsRouter.js";
@@ -24,6 +25,7 @@ mongoose.connect(
 
 app.use(cors());
 app.use(express.json());
+app.use(mw.getToken);
 
 // Set routes
 app.use("/api/blogs", blogsRouter);
