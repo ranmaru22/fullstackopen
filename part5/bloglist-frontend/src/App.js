@@ -2,11 +2,13 @@ import React, { useState, useEffect } from "react";
 import Blog from "./components/Blog";
 import LoginForm from "./components/LoginForm";
 import NewBlogForm from "./components/NewBlogForm";
+import Notification from "./components/Notification";
 import blogService from "./services/blogs";
 
 const App = () => {
     const [blogs, setBlogs] = useState([]);
     const [user, setUser] = useState(null);
+    const [notification, setNotification] = useState({});
 
     useEffect(() => {
         blogService.getAll().then(blogs => setBlogs(blogs));
@@ -20,6 +22,11 @@ const App = () => {
         }
     }, []);
 
+    const callNotification = (msg, isError = false, duration = 2500) => {
+        setNotification({ msg, isError, duration });
+        setTimeout(() => setNotification({}), duration + 1);
+    };
+
     const handleLogout = () => {
         window.localStorage.removeItem("blogAppUser");
         setUser(null);
@@ -29,9 +36,10 @@ const App = () => {
         return (
             <div>
                 <h2>blogs</h2>
+                <Notification args={notification} />
                 <p>Please log in</p>
                 <div>
-                    <LoginForm setUserFn={setUser} />
+                    <LoginForm setUserFn={setUser} cb={callNotification} />
                 </div>
             </div>
         );
@@ -39,6 +47,7 @@ const App = () => {
         return (
             <div>
                 <h2>blogs</h2>
+                <Notification args={notification} />
                 <p>Logged in as {user.name ?? user.username}</p>
                 <p>
                     <button onClick={handleLogout}>Logout</button>
@@ -54,6 +63,7 @@ const App = () => {
                         user={user}
                         blogs={blogs}
                         setBlogsFn={setBlogs}
+                        cb={callNotification}
                     />
                 </div>
             </div>

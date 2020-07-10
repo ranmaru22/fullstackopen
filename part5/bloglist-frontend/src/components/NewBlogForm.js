@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import blogService from "../services/blogs";
 
-const NewBlogForm = ({ user, blogs, setBlogsFn }) => {
+const NewBlogForm = ({ user, blogs, setBlogsFn, cb }) => {
     const [title, setTitle] = useState("");
     const [author, setAuthor] = useState("");
     const [url, setUrl] = useState("");
@@ -9,11 +9,16 @@ const NewBlogForm = ({ user, blogs, setBlogsFn }) => {
     const handleSubmit = async e => {
         e.preventDefault();
         const newBlog = { title, author, url };
-        const savedBlog = await blogService.create(newBlog, user.token);
-        setBlogsFn(blogs.concat(savedBlog));
-        setTitle("");
-        setAuthor("");
-        setUrl("");
+        try {
+            const savedBlog = await blogService.create(newBlog, user.token);
+            setBlogsFn(blogs.concat(savedBlog));
+            setTitle("");
+            setAuthor("");
+            setUrl("");
+            cb(`Added blog ${savedBlog.title} by ${savedBlog.author}`);
+        } catch {
+            cb("Error adding blog.", true);
+        }
     };
 
     return (

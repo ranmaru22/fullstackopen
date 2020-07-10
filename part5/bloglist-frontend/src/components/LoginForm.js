@@ -1,16 +1,24 @@
 import React, { useState } from "react";
 import loginService from "../services/login";
 
-const LoginForm = ({ setUserFn }) => {
+const LoginForm = ({ setUserFn, cb }) => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
     const handleLogin = async e => {
         e.preventDefault();
-        const user = await loginService.login({ username, password });
-        if (user) {
-            setUserFn(user);
-            window.localStorage.setItem("blogAppUser", JSON.stringify(user));
+        try {
+            const user = await loginService.login({ username, password });
+            if (user) {
+                setUserFn(user);
+                window.localStorage.setItem(
+                    "blogAppUser",
+                    JSON.stringify(user)
+                );
+                cb(`Logged in. Welcome, ${user.name ?? user.username}.`);
+            }
+        } catch (err) {
+            cb("Error logging in. Please try again.", true);
         }
     };
 
