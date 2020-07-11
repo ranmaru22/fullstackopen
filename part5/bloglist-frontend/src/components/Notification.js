@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import "./Notification.css";
 
 const Notification = ({ args }) => {
@@ -11,14 +12,12 @@ const Notification = ({ args }) => {
     }, [msg, duration]);
 
     return (
-        <div
-            className={
-                message ? (isError ? "error-msg" : "notification-msg") : ""
-            }
-        >
-            {message}
-        </div>
+        <div className={message ? (isError ? "error-msg" : "notification-msg") : ""}>{message}</div>
     );
+};
+
+Notification.propTypes = {
+    args: PropTypes.object.isRequired
 };
 
 export default Notification;

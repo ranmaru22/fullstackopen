@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 import loginService from "../services/login";
 
 const LoginForm = ({ setUserFn, cb }) => {
@@ -11,10 +12,7 @@ const LoginForm = ({ setUserFn, cb }) => {
             const user = await loginService.login({ username, password });
             if (user) {
                 setUserFn(user);
-                window.localStorage.setItem(
-                    "blogAppUser",
-                    JSON.stringify(user)
-                );
+                window.localStorage.setItem("blogAppUser", JSON.stringify(user));
                 cb(`Logged in. Welcome, ${user.name ?? user.username}.`);
             }
         } catch (err) {
@@ -47,6 +45,11 @@ const LoginForm = ({ setUserFn, cb }) => {
             <button type="submit">Login</button>
         </form>
     );
+};
+
+LoginForm.propTypes = {
+    setUserFn: PropTypes.func.isRequired,
+    cb: PropTypes.func.isRequired
 };
 
 export default LoginForm;
