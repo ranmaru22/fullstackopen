@@ -18,4 +18,10 @@ const update = async (blogId, patch, token) => {
     return response.data;
 };
 
-export default { getAll, create, update };
+const destroy = async (blogId, token) => {
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+    const success = await axios.delete(`${baseUrl}/${blogId}`, config);
+    return success.status === 204;
+};
+
+export default { getAll, create, update, destroy };

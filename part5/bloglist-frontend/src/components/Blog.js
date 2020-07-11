@@ -21,6 +21,18 @@ const Blog = ({ blog, user, allBlogs, setBlogsFn, cb }) => {
         }
     };
 
+    const handleDelete = async blog => {
+        if (window.confirm(`Do you really want to delete ${blog.title}?`)) {
+            try {
+                await blogService.destroy(blog.id, user.token);
+                setBlogsFn(allBlogs.filter(b => b.id !== blog.id));
+                cb(`Deleted ${blog.title}!`);
+            } catch (err) {
+                cb(`Error deleting ${blog.title}.`, true);
+            }
+        }
+    };
+
     return (
         <div className="blog">
             <div>
@@ -37,6 +49,9 @@ const Blog = ({ blog, user, allBlogs, setBlogsFn, cb }) => {
                     {blog.likes} likes <button onClick={() => handleLike(blog)}>Like</button>
                 </p>
                 <p>Added by: {blog.user.name ?? blog.user.username}</p>
+                <p>
+                    <button onClick={() => handleDelete(blog)}>Delete Blog</button>
+                </p>
             </div>
         </div>
     );
