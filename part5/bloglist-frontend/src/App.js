@@ -11,15 +11,16 @@ const App = () => {
     const [notification, setNotification] = useState({});
 
     useEffect(() => {
-        blogService.getAll().then(blogs => setBlogs(blogs));
-    }, []);
-
-    useEffect(() => {
+        async function fetchBlogs() {
+            const blogs = await blogService.getAll();
+            setBlogs(blogs.sort((a, b) => b.likes - a.likes));
+        }
         const savedUser = window.localStorage.getItem("blogAppUser");
         if (savedUser) {
             const user = JSON.parse(savedUser);
             setUser(user);
         }
+        fetchBlogs();
     }, []);
 
     const callNotification = (msg, isError = false, duration = 2500) => {

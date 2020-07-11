@@ -7,11 +7,18 @@ const Blog = ({ blog, user, allBlogs, setBlogsFn, cb }) => {
     const toggleVisible = () => setIsVisible(!isVisible);
 
     const handleLike = async blog => {
-        console.log("like fn");
         const patch = { likes: blog.likes + 1 };
-        const updatedBlog = await blogService.update(blog.id, patch, user.token);
-        setBlogsFn(allBlogs.map(b => (b.id === updatedBlog.id ? updatedBlog : b)));
-        cb(`Liked ${updatedBlog.title}!`);
+        try {
+            const updatedBlog = await blogService.update(blog.id, patch, user.token);
+            setBlogsFn(
+                allBlogs
+                    .map(b => (b.id === updatedBlog.id ? updatedBlog : b))
+                    .sort((a, b) => b.likes - a.likes)
+            );
+            cb(`Liked ${updatedBlog.title}!`);
+        } catch (err) {
+            cb(`Error liking ${blog.title}.`, true);
+        }
     };
 
     return (
