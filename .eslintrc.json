@@ -1,12 +1,19 @@
 {
+    "extends": ["eslint:recommended", "plugin:react/recommended"],
     "parserOptions": {
+        "ecmaVersion": 2020,
+        "ecmaFeatures": { "jsx": true },
         "sourceType": "module",
         "parser": "babel-eslint"
     },
     "env": {
         "commonjs": true,
         "es6": true,
+        "browser": true,
         "node": true,
         "jest": true
+    },
+    "rules": {
+        "react/prop-types": 0
     }
 }
