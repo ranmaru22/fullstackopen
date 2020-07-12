@@ -1,6 +1,6 @@
 import React from "react";
 import "@testing-library/jest-dom/extend-expect";
-import { render } from "@testing-library/react";
+import { render, fireEvent } from "@testing-library/react";
 import Blog from "../Blog";
 
 describe("Blog component", () => {
@@ -27,5 +27,13 @@ describe("Blog component", () => {
         const detailsSection = component.container.querySelector(".blogDetails");
         expect(titleSection).toHaveTextContent("Test Blog Test Author");
         expect(detailsSection).toHaveClass("hidden");
+    });
+
+    it("shows details when the button is clicked", () => {
+        const detailsSection = component.container.querySelector(".blogDetails");
+        const showDetailsBtn = component.getByText("show details");
+        expect(detailsSection).toHaveClass("hidden");
+        fireEvent.click(showDetailsBtn);
+        expect(detailsSection).not.toHaveClass("hidden");
     });
 });
