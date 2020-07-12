@@ -36,13 +36,13 @@ const Blog = ({ blog, user, allBlogs, setBlogsFn, cb }) => {
 
     return (
         <div className="blog">
-            <div>
+            <div className="blogTitle">
                 <strong>{blog.title}</strong> <em>{blog.author}</em>
                 <button onClick={toggleVisible}>
                     {isVisible ? "hide details" : "show details"}
                 </button>
             </div>
-            <div className={isVisible ? "" : "hidden"}>
+            <div className={isVisible ? "blogDetails" : "blogDetails hidden"}>
                 <p>
                     <a href={blog.url}>{blog.url}</a>
                 </p>
