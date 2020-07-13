@@ -26,7 +26,7 @@ const NewBlogForm = ({ handleAdd }) => {
                 <button onClick={toggleVisible}>Add new Blog</button>
             </div>
             <div className={isVisible ? "" : "hidden"}>
-                <form onSubmit={handleSubmit}>
+                <form id="addBlogForm" onSubmit={handleSubmit}>
                     <div>
                         Title:
                         <input
