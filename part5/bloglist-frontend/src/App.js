@@ -28,6 +28,43 @@ const App = () => {
         setTimeout(() => setNotification({}), duration + 1);
     };
 
+    const handleAdd = async blog => {
+        try {
+            const savedBlog = await blogService.create(blog, user.token);
+            setBlogs(blogs.concat(savedBlog));
+            callNotification(`Added blog ${savedBlog.title} by ${savedBlog.author}`);
+        } catch {
+            callNotification("Error adding blog.", true);
+        }
+    };
+
+    const handleLike = async blog => {
+        const patch = { likes: blog.likes + 1 };
+        try {
+            const updatedBlog = await blogService.update(blog.id, patch, user.token);
+            setBlogs(
+                blogs
+                    .map(b => (b.id === updatedBlog.id ? updatedBlog : b))
+                    .sort((a, b) => b.likes - a.likes)
+            );
+            callNotification(`Liked ${updatedBlog.title}!`);
+        } catch (err) {
+            callNotification(`Error liking ${blog.title}.`, true);
+        }
+    };
+
+    const handleDelete = async blog => {
+        if (window.confirm(`Do you really want to delete ${blog.title}?`)) {
+            try {
+                await blogService.destroy(blog.id, user.token);
+                setBlogs(blogs.filter(b => b.id !== blog.id));
+                callNotification(`Deleted ${blog.title}!`);
+            } catch (err) {
+                callNotification(`Error deleting ${blog.title}.`, true);
+            }
+        }
+    };
+
     const handleLogout = () => {
         window.localStorage.removeItem("blogAppUser");
         setUser(null);
@@ -58,21 +95,14 @@ const App = () => {
                         <Blog
                             key={blog.id}
                             blog={blog}
-                            user={user}
-                            allBlogs={blogs}
-                            setBlogsFn={setBlogs}
-                            cb={callNotification}
+                            handleLike={handleLike}
+                            handleDelete={handleDelete}
                         />
                     ))}
                 </div>
                 <h2>Add a new blog</h2>
                 <div>
-                    <NewBlogForm
-                        user={user}
-                        blogs={blogs}
-                        setBlogsFn={setBlogs}
-                        cb={callNotification}
-                    />
+                    <NewBlogForm handleAdd={handleAdd} />
                 </div>
             </div>
         );
