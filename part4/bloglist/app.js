@@ -9,6 +9,7 @@ import mw from "./utils/middleware.js";
 import blogsRouter from "./routes/blogsRouter.js";
 import userRouter from "./routes/userRouter.js";
 import loginRouter from "./routes/loginRouter.js";
+import testRouter from "./routes/testRouter.js";
 
 const app = express();
 
@@ -31,6 +32,9 @@ app.use(mw.getToken);
 app.use("/api/blogs", blogsRouter);
 app.use("/api/user", userRouter);
 app.use("/api/login", loginRouter);
+if (process.env.NODE_ENV === "test") {
+    app.use("/api/testing", testRouter);
+}
 
 // Error handler
 app.use((err, req, res, next) => {
