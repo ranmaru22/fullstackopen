@@ -21,7 +21,7 @@ const Blog = ({ blog, handleLike, handleDelete }) => {
                 <p>
                     {blog.likes} likes <button onClick={() => handleLike(blog)}>Like</button>
                 </p>
-                <p>Added by: {blog.user.name ?? blog.user.username}</p>
+                <p>Added by: {blog.user?.name ?? blog.user?.username ?? "Anonymous"}</p>
                 <p>
                     <button onClick={() => handleDelete(blog)}>Delete Blog</button>
                 </p>
