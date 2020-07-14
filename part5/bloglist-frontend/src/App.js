@@ -88,7 +88,9 @@ const App = () => {
                 <Notification args={notification} />
                 <p>Logged in as {user.name ?? user.username}</p>
                 <p>
-                    <button onClick={handleLogout}>Logout</button>
+                    <button id="logoutBtn" onClick={handleLogout}>
+                        Logout
+                    </button>
                 </p>
                 <div>
                     {blogs.map(blog => (
