@@ -21,7 +21,7 @@ const LoginForm = ({ setUserFn, cb }) => {
     };
 
     return (
-        <form onSubmit={handleLogin}>
+        <form id="loginForm" onSubmit={handleLogin}>
             <div>
                 Username:{" "}
                 <input
