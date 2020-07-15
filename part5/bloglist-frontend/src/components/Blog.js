@@ -10,7 +10,7 @@ const Blog = ({ blog, handleLike, handleDelete }) => {
         <div className="blog">
             <div className="blogTitle">
                 <strong>{blog.title}</strong> <em>{blog.author}</em>
-                <button onClick={toggleVisible}>
+                <button className="detailsBtn" onClick={toggleVisible}>
                     {isVisible ? "hide details" : "show details"}
                 </button>
             </div>
@@ -19,7 +19,10 @@ const Blog = ({ blog, handleLike, handleDelete }) => {
                     <a href={blog.url}>{blog.url}</a>
                 </p>
                 <p>
-                    {blog.likes} likes <button onClick={() => handleLike(blog)}>Like</button>
+                    {blog.likes} likes{" "}
+                    <button className="likeBtn" onClick={() => handleLike(blog)}>
+                        Like
+                    </button>
                 </p>
                 <p>Added by: {blog.user?.name ?? blog.user?.username ?? "Anonymous"}</p>
                 <p>
