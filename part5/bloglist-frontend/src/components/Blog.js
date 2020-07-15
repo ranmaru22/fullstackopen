@@ -26,7 +26,9 @@ const Blog = ({ blog, handleLike, handleDelete }) => {
                 </p>
                 <p>Added by: {blog.user?.name ?? blog.user?.username ?? "Anonymous"}</p>
                 <p>
-                    <button onClick={() => handleDelete(blog)}>Delete Blog</button>
+                    <button className="deleteBtn" onClick={() => handleDelete(blog)}>
+                        Delete Blog
+                    </button>
                 </p>
             </div>
         </div>

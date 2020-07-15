@@ -92,7 +92,7 @@ const App = () => {
                         Logout
                     </button>
                 </p>
-                <div>
+                <div id="blogs">
                     {blogs.map(blog => (
                         <Blog
                             key={blog.id}

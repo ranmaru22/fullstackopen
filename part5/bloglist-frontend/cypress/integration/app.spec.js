@@ -1,5 +1,8 @@
 describe("Blog app", () => {
-    beforeEach(() => cy.resetAndRegister());
+    beforeEach(() => {
+        cy.resetAndRegister();
+        cy.visit("http://localhost:3000");
+    });
 
     it("shows the login form", () => {
         cy.get("#loginForm").as("loginForm").should("exist");
@@ -51,7 +54,7 @@ describe("Blog app", () => {
             cy.contains(`${testBlog.title} ${testBlog.author}`).should("exist");
         });
 
-        it.only("can like blogs", () => {
+        it("can like blogs", () => {
             cy.contains("Foobar Blog").parent().find(".detailsBtn").click();
             cy.contains("Foobar Blog").parent().parent().find(".blogDetails").as("blogDetails");
             cy.get("@blogDetails").find(".likeBtn").click().click();
@@ -59,6 +62,52 @@ describe("Blog app", () => {
                 .should("exist")
                 .should("have.class", "notification-msg");
             cy.get("@blogDetails").contains("2 likes").should("exist");
+        });
+
+        it("can delete own blogs", () => {
+            cy.contains("Foobar Blog").parent().find(".detailsBtn").click();
+            cy.contains("Foobar Blog").parent().parent().find(".deleteBtn").click();
+            cy.contains("Deleted Foobar Blog")
+                .should("exist")
+                .should("have.class", "notification-msg");
+            cy.contains("Foobar Blog").should("not.exist");
+        });
+
+        it("cannot delete other people's blogs", () => {
+            cy.get("#logoutBtn").click();
+            cy.addUser({ username: "new", password: "Sekret456" });
+            cy.login({ username: "new", password: "Sekret456" });
+            cy.visit("http://localhost:3000");
+            cy.contains("Foobar Blog").parent().find(".detailsBtn").click();
+            cy.contains("Foobar Blog").parent().parent().find(".deleteBtn").click();
+            cy.contains("Error deleting Foobar Blog")
+                .should("exist")
+                .should("have.class", "error-msg");
+            cy.contains("Foobar Blog").should("exist");
+        });
+
+        it("orders the blogs dynamically by likes descending", () => {
+            cy.get(".detailsBtn").click({ multiple: true });
+            cy.get("#blogs").should(ret => {
+                const blogs = Array.from(ret[0].childNodes).map(n => n.firstChild.innerText);
+                expect(blogs[0]).to.match(/Foobar Blog/);
+                expect(blogs[1]).to.match(/Barbaz Blog/);
+                expect(blogs[2]).to.match(/Bazqux Blog/);
+            });
+
+            cy.contains("Foobar Blog").parent().parent().find(".blogDetails").as("fooBlog");
+            cy.get("@fooBlog").find(".likeBtn").click().click();
+            cy.contains("Barbaz Blog").parent().parent().find(".blogDetails").as("barBlog");
+            cy.get("@barBlog").find(".likeBtn").click().click().click();
+            cy.contains("Bazqux Blog").parent().parent().find(".blogDetails").as("bazBlog");
+            cy.get("@bazBlog").find(".likeBtn").click().click().click().click().click();
+
+            cy.get("#blogs").should(ret => {
+                const blogs = Array.from(ret[0].childNodes).map(n => n.firstChild.innerText);
+                expect(blogs[0]).to.match(/Bazqux Blog/);
+                expect(blogs[1]).to.match(/Barbaz Blog/);
+                expect(blogs[2]).to.match(/Foobar Blog/);
+            });
         });
     });
 });

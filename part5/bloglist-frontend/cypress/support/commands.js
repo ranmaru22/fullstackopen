@@ -31,13 +31,11 @@ Cypress.Commands.add("addUser", ({ username, password }) => {
 Cypress.Commands.add("resetAndRegister", () => {
     cy.request("POST", "http://localhost:3001/api/testing/reset");
     cy.addUser({ username: "root", password: "Sekret123" });
-    cy.visit("http://localhost:3000");
 });
 
 Cypress.Commands.add("login", ({ username, password }) => {
     cy.request("POST", "http://localhost:3001/api/login", { username, password }).then(res => {
         localStorage.setItem("blogAppUser", JSON.stringify(res.body));
-        cy.visit("http://localhost:3000");
     });
 });
 
@@ -50,5 +48,4 @@ Cypress.Commands.add("addBlog", blog => {
             Authorization: `Bearer ${JSON.parse(localStorage.getItem("blogAppUser")).token}`
         }
     });
-    cy.visit("http://localhost:3000");
 });
