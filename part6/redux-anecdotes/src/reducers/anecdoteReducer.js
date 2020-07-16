@@ -24,11 +24,18 @@ export const upvote = id => ({
     data: { id }
 });
 
+export const createAnecdote = content => ({
+    type: "CREATE",
+    data: { content, id: getId(), votes: 0 }
+});
+
 const reducer = (state = initialState, action) => {
     console.log("state now: ", state);
     console.log("action", action);
 
     switch (action.type) {
+        case "CREATE":
+            return state.concat(action.data);
         case "VOTE":
             return state.map(n => (n.id === action.data.id ? { ...n, votes: n.votes + 1 } : n));
         default:
