@@ -12,13 +12,13 @@ const AnecdoteForm = () => {
         setTimeout(() => dispatch(hideNotification()), 5000);
     };
 
+    const style = { marginBottom: 10 };
+
     return (
-        <div>
+        <div style={style}>
             <h2>create new</h2>
             <form onSubmit={newAnecdote}>
-                <div>
-                    <input type="text" name="content" />
-                </div>
+                <input type="text" name="content" />
                 <button type="submit">create</button>
             </form>
         </div>

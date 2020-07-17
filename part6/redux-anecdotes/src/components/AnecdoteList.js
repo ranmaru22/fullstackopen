@@ -23,7 +23,10 @@ const Anectote = ({ anecdote }) => {
 };
 
 const AnectoteList = () => {
-    const anecdotes = useSelector(state => state.anecdotes.sort((a, b) => b.votes - a.votes));
+    const filter = useSelector(state => state.filter);
+    const anecdotes = useSelector(state =>
+        state.anecdotes.filter(a => a.content.includes(filter)).sort((a, b) => b.votes - a.votes)
+    );
 
     return (
         <div>
