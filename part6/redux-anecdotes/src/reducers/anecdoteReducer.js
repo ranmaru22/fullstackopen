@@ -29,9 +29,9 @@ export const upvote = id => ({
     data: { id }
 });
 
-export const createAnecdote = content => ({
+export const createAnecdote = data => ({
     type: "CREATE",
-    data: { content, id: getId(), votes: 0 }
+    data
 });
 
 const reducer = (state = [], action) => {
