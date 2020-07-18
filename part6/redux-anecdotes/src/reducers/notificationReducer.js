@@ -1,11 +1,10 @@
-export const hideNotification = () => ({
-    type: "HIDE"
-});
-
-export const showNotification = msg => ({
-    type: "SHOW",
-    msg
-});
+export const showNotification = (msg, duration) => async dispatch => {
+    dispatch({
+        type: "SHOW",
+        msg
+    });
+    setTimeout(() => dispatch({ type: "HIDE" }), duration * 1000);
+};
 
 const reducer = (state = "", action) => {
     switch (action.type) {
@@ -19,4 +18,3 @@ const reducer = (state = "", action) => {
 };
 
 export default reducer;
-

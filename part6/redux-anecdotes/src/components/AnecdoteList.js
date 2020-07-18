@@ -1,15 +1,14 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { initialize, upvote } from "../reducers/anecdoteReducer";
-import { showNotification, hideNotification } from "../reducers/notificationReducer";
+import { showNotification } from "../reducers/notificationReducer";
 
 const Anectote = ({ anecdote }) => {
     const dispatch = useDispatch();
 
     const vote = anecdote => {
         dispatch(upvote(anecdote));
-        dispatch(showNotification(`Upvoted "${anecdote.content}"`));
-        setTimeout(() => dispatch(hideNotification()), 5000);
+        dispatch(showNotification(`Upvoted "${anecdote.content}"`, 5));
     };
 
     return (
