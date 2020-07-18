@@ -34,10 +34,13 @@ export const upvote = id => ({
     data: { id }
 });
 
-export const createAnecdote = data => ({
-    type: "CREATE",
-    data
-});
+export const createAnecdote = content => async dispatch => {
+    const data = await anecdoteService.create({ content, votes: 0 });
+    dispatch({
+        type: "CREATE",
+        data
+    });
+};
 
 const reducer = (state = [], action) => {
     console.log("state now: ", state);
