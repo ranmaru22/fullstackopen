@@ -29,10 +29,14 @@ export const initialize = () => async dispatch => {
     });
 };
 
-export const upvote = id => ({
-    type: "VOTE",
-    data: { id }
-});
+export const upvote = anecdote => async dispatch => {
+    const patch = { votes: anecdote.votes + 1 };
+    const data = await anecdoteService.update(anecdote.id, patch);
+    dispatch({
+        type: "VOTE",
+        data
+    });
+};
 
 export const createAnecdote = content => async dispatch => {
     const data = await anecdoteService.create({ content, votes: 0 });
@@ -52,7 +56,7 @@ const reducer = (state = [], action) => {
         case "CREATE":
             return state.concat(action.data);
         case "VOTE":
-            return state.map(n => (n.id === action.data.id ? { ...n, votes: n.votes + 1 } : n));
+            return state.map(n => (n.id === action.data.id ? action.data : n));
         default:
             return state;
     }

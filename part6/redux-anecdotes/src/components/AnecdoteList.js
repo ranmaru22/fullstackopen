@@ -7,7 +7,7 @@ const Anectote = ({ anecdote }) => {
     const dispatch = useDispatch();
 
     const vote = anecdote => {
-        dispatch(upvote(anecdote.id));
+        dispatch(upvote(anecdote));
         dispatch(showNotification(`Upvoted "${anecdote.content}"`));
         setTimeout(() => dispatch(hideNotification()), 5000);
     };
@@ -27,7 +27,9 @@ const AnectoteList = () => {
     const dispatch = useDispatch();
     const filter = useSelector(state => state.filter);
 
-    useEffect(() => dispatch(initialize()), [dispatch]);
+    useEffect(() => {
+        dispatch(initialize());
+    }, [dispatch]);
 
     const anecdotes = useSelector(state =>
         state.anecdotes.filter(a => a.content.includes(filter)).sort((a, b) => b.votes - a.votes)
