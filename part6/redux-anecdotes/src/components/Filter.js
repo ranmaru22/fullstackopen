@@ -1,21 +1,20 @@
 import React, { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { connect } from "react-redux";
 import { setFilter, resetFilter } from "../reducers/filterReducer";
 
-const Filter = () => {
-    const dispatch = useDispatch();
-    const [filterVal, setFilterVal] = useState(useSelector(state => state.filter));
+const Filter = props => {
+    const [filterVal, setFilterVal] = useState(props.filter);
 
     const style = { marginBottom: 10 };
 
     const handleFilterChange = e => {
         setFilterVal(e.target.value);
-        dispatch(setFilter(filterVal));
+        props.setFilter(filterVal);
     };
 
     const clearFilter = () => {
         setFilterVal("");
-        dispatch(resetFilter());
+        props.resetFilter();
     };
 
     return (
@@ -27,4 +26,10 @@ const Filter = () => {
     );
 };
 
-export default Filter;
+const mapState = state => ({
+    filter: state.filter
+});
+
+const mapDispatch = { setFilter, resetFilter };
+
+export default connect(mapState, mapDispatch)(Filter);
