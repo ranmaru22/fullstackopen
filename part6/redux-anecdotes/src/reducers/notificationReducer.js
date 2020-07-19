@@ -1,14 +1,16 @@
+let currentTimeoutId;
 export const showNotification = (msg, duration) => async dispatch => {
     dispatch({
         type: "SHOW",
         msg
     });
-    setTimeout(() => dispatch({ type: "HIDE" }), duration * 1000);
+    currentTimeoutId = setTimeout(() => dispatch({ type: "HIDE" }), duration * 1000);
 };
 
 const reducer = (state = "", action) => {
     switch (action.type) {
         case "SHOW":
+            clearTimeout(currentTimeoutId);
             return action.msg;
         case "HIDE":
             return "";
