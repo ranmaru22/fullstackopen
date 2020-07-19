@@ -1,46 +1,58 @@
 import React, { useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { connect } from "react-redux";
 import { initialize, upvote } from "../reducers/anecdoteReducer";
 import { showNotification } from "../reducers/notificationReducer";
 
-const Anectote = ({ anecdote }) => {
-    const dispatch = useDispatch();
-
+const Anecdote = props => {
     const vote = anecdote => {
-        dispatch(upvote(anecdote));
-        dispatch(showNotification(`Upvoted "${anecdote.content}"`, 5));
+        props.upvote(anecdote);
+        props.showNotification(`Upvoted "${anecdote.content}"`, 5);
     };
 
     return (
         <div>
-            <div>{anecdote.content}</div>
+            <div>{props.anecdote.content}</div>
             <div>
-                has {anecdote.votes}
-                <button onClick={() => vote(anecdote)}>vote</button>
+                has {props.anecdote.votes}
+                <button onClick={() => vote(props.anecdote)}>vote</button>
             </div>
         </div>
     );
 };
 
-const AnectoteList = () => {
-    const dispatch = useDispatch();
-    const filter = useSelector(state => state.filter);
-
+const AnectoteList = props => {
+    const initialize = props.initialize;
     useEffect(() => {
-        dispatch(initialize());
-    }, [dispatch]);
+        initialize();
+    }, [initialize]);
 
-    const anecdotes = useSelector(state =>
-        state.anecdotes.filter(a => a.content.includes(filter)).sort((a, b) => b.votes - a.votes)
-    );
+    const anecdotes = props.anecdotes
+        .filter(a => a.content.includes(props.filter))
+        .sort((a, b) => b.votes - a.votes);
 
     return (
         <div>
             {anecdotes.map(a => (
-                <Anectote key={a.id} anecdote={a} />
+                <Anecdote
+                    key={a.id}
+                    anecdote={a}
+                    upvote={props.upvote}
+                    showNotification={props.showNotification}
+                />
             ))}
         </div>
     );
 };
 
-export default AnectoteList;
+const mapState = state => ({
+    anecdotes: state.anecdotes,
+    filter: state.filter
+});
+
+const mapDispatch = {
+    upvote,
+    initialize,
+    showNotification
+};
+
+export default connect(mapState, mapDispatch)(AnectoteList);
