@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { BrowserRouter, Route, Switch, Link } from "react-router-dom";
 
 const Menu = () => {
     const padding = {
@@ -6,15 +7,15 @@ const Menu = () => {
     };
     return (
         <div>
-            <a href="#" style={padding}>
+            <Link style={padding} to="/">
                 anecdotes
-            </a>
-            <a href="#" style={padding}>
+            </Link>
+            <Link style={padding} to="/create">
                 create new
-            </a>
-            <a href="#" style={padding}>
+            </Link>
+            <Link style={padding} to="/about">
                 about
-            </a>
+            </Link>
         </div>
     );
 };
@@ -144,10 +145,22 @@ const App = () => {
     return (
         <div>
             <h1>Software anecdotes</h1>
-            <Menu />
-            <AnecdoteList anecdotes={anecdotes} />
-            <About />
-            <CreateNew addNew={addNew} />
+            <BrowserRouter>
+                <Menu />
+
+                <Switch>
+                    <Route path="/about">
+                        <About />
+                    </Route>
+                    <Route path="/create">
+                        <CreateNew addNew={addNew} />
+                    </Route>
+                    <Route path="/">
+                        <AnecdoteList anecdotes={anecdotes} />
+                    </Route>
+                </Switch>
+            </BrowserRouter>
+
             <Footer />
         </div>
     );
