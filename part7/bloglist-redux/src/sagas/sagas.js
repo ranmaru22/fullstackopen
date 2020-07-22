@@ -30,6 +30,32 @@ function* watchCreateBlog() {
     yield takeLatest("ADD_BLOG", addNewBlog);
 }
 
+function* deleteBlog(action) {
+    try {
+        yield call(blogService.destroy, action.id, action.token);
+        yield put({ type: "DEL_BLOG_SUCCESS", id: action.id });
+    } catch (err) {
+        yield put({ type: "ADD_BLOG_ERROR", message: err.message });
+    }
+}
+
+function* watchDeleteBlog() {
+    yield takeLatest("DEL_BLOG", deleteBlog);
+}
+
+function* likeBlog(action) {
+    try {
+        const payload = yield call(blogService.update, action.id, action.patch, action.token);
+        yield put({ type: "LIKE_BLOG_SUCCESS", payload });
+    } catch (err) {
+        yield put({ type: "LIKE_BLOG_ERROR", message: err.message });
+    }
+}
+
+function* watchLikeBlog() {
+    yield takeLatest("LIKE_BLOG", likeBlog);
+}
+
 function* setUser(action) {
     try {
         const payload = yield call(loginService.login, action.credentials);
@@ -59,5 +85,12 @@ function* watchNotification() {
 }
 
 export default function* rootSaga() {
-    yield all([watchLogin(), watchInitialize(), watchCreateBlog(), watchNotification()]);
+    yield all([
+        watchLogin(),
+        watchInitialize(),
+        watchCreateBlog(),
+        watchDeleteBlog(),
+        watchLikeBlog(),
+        watchNotification()
+    ]);
 }
