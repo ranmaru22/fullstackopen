@@ -1,7 +1,12 @@
 import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { createNewBlog } from "../reducers/blogsReducer";
+import { showNotification } from "../reducers/notificationReducer";
 import "./NewBlogForm.css";
 
 const NewBlogForm = () => {
+    const dispatch = useDispatch();
+    const token = useSelector(state => state.user.token);
     const [isVisible, setIsVisible] = useState(false);
     const [title, setTitle] = useState("");
     const [author, setAuthor] = useState("");
@@ -11,12 +16,13 @@ const NewBlogForm = () => {
 
     const handleSubmit = async e => {
         e.preventDefault();
-        // const newBlog = { title, author, url };
-        // await handleAdd(newBlog);
+        const newBlog = { title, author, url };
+        dispatch(createNewBlog(newBlog, token));
         setTitle("");
         setAuthor("");
         setUrl("");
         toggleVisible();
+        dispatch(showNotification(`Added ${newBlog.title}`));
     };
 
     return (

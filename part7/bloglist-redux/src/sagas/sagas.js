@@ -7,14 +7,27 @@ const delay = ms => new Promise(res => setTimeout(res, ms));
 function* fetchAllBlogs() {
     try {
         const payload = yield call(blogService.getAll);
-        yield put({ type: "INIT_SUCCESS", payload });
+        yield put({ type: "INIT_BLOGS_SUCCESS", payload });
     } catch (err) {
-        yield put({ type: "INIT_ERROR", message: err.message });
+        yield put({ type: "INIT_BLOGS_ERROR", message: err.message });
     }
 }
 
 function* watchInitialize() {
-    yield takeLatest("INIT", fetchAllBlogs);
+    yield takeLatest("INIT_BLOGS", fetchAllBlogs);
+}
+
+function* addNewBlog(action) {
+    try {
+        const payload = yield call(blogService.create, action.newBlog, action.token);
+        yield put({ type: "ADD_BLOG_SUCCESS", payload });
+    } catch (err) {
+        yield put({ type: "ADD_BLOG_ERROR", message: err.message });
+    }
+}
+
+function* watchCreateBlog() {
+    yield takeLatest("ADD_BLOG", addNewBlog);
 }
 
 function* setUser(action) {
@@ -46,5 +59,5 @@ function* watchNotification() {
 }
 
 export default function* rootSaga() {
-    yield all([watchLogin(), watchInitialize(), watchNotification()]);
+    yield all([watchLogin(), watchInitialize(), watchCreateBlog(), watchNotification()]);
 }
