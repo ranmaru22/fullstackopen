@@ -1,13 +1,16 @@
 import React, { useEffect } from "react";
+import { Route, Switch, Link, useHistory, useRouteMatch } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Blog from "./components/Blog";
 import LoginForm from "./components/LoginForm";
 import NewBlogForm from "./components/NewBlogForm";
+import UserList from "./components/UserList";
 import Notification from "./components/Notification";
 
 import { initializeBlogs } from "./reducers/blogsReducer";
 import { getUserFromToken, logoutUser } from "./reducers/userReducer";
 import { showNotification } from "./reducers/notificationReducer";
+import { getUserlist } from "./reducers/userlistReducer";
 
 const App = () => {
     const dispatch = useDispatch();
@@ -21,6 +24,7 @@ const App = () => {
             dispatch(getUserFromToken(JSON.parse(userInStorage)));
         }
         dispatch(initializeBlogs());
+        dispatch(getUserlist());
     }, [dispatch]);
 
     const handleLogout = () => {
@@ -51,15 +55,22 @@ const App = () => {
                         Logout
                     </button>
                 </p>
-                <div id="blogs">
-                    {blogs.map(blog => (
-                        <Blog key={blog.id} blog={blog} />
-                    ))}
-                </div>
-                <h2>Add a new blog</h2>
-                <div>
-                    <NewBlogForm />
-                </div>
+                <Switch>
+                    <Route path="/users">
+                        <UserList />
+                    </Route>
+                    <Route path="/">
+                        <div id="blogs">
+                            {blogs.map(blog => (
+                                <Blog key={blog.id} blog={blog} />
+                            ))}
+                        </div>
+                        <h2>Add a new blog</h2>
+                        <div>
+                            <NewBlogForm />
+                        </div>
+                    </Route>
+                </Switch>
             </div>
         );
     }

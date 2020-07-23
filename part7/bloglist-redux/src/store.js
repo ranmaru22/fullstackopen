@@ -4,19 +4,21 @@ import createSagaMiddleware from "redux-saga";
 
 import blogsReducer from "./reducers/blogsReducer";
 import userReducer from "./reducers/userReducer";
+import userlistReducer from "./reducers/userlistReducer";
 import notificationReducer from "./reducers/notificationReducer";
 
 import rootSaga from "./sagas/sagas";
 
 const sagaMiddleware = createSagaMiddleware();
 
-const reducers = combineReducers({
+const rootReducer = combineReducers({
     blogs: blogsReducer,
     user: userReducer,
+    userlist: userlistReducer,
     notification: notificationReducer
 });
 
-const store = createStore(reducers, composeWithDevTools(applyMiddleware(sagaMiddleware)));
+const store = createStore(rootReducer, composeWithDevTools(applyMiddleware(sagaMiddleware)));
 
 sagaMiddleware.run(rootSaga);
 

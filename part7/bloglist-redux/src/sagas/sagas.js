@@ -1,9 +1,11 @@
 import { all, call, put, takeEvery, takeLatest } from "redux-saga/effects";
 import blogService from "../services/blogs";
 import loginService from "../services/login";
+import userService from "../services/users";
 
 const delay = ms => new Promise(res => setTimeout(res, ms));
 
+// Blog services {{{
 function* fetchAllBlogs() {
     try {
         const payload = yield call(blogService.getAll);
@@ -55,7 +57,9 @@ function* likeBlog(action) {
 function* watchLikeBlog() {
     yield takeLatest("LIKE_BLOG", likeBlog);
 }
+// }}}
 
+/// User/Login services {{{
 function* setUser(action) {
     try {
         const payload = yield call(loginService.login, action.credentials);
@@ -69,7 +73,24 @@ function* setUser(action) {
 function* watchLogin() {
     yield takeEvery("SET_USER", setUser);
 }
+//}}}
 
+// Userlist services {{{
+function* fetchUserlist() {
+    try {
+        const payload = yield call(userService.getAll);
+        yield put({ type: "GET_USERLIST_SUCCESS", payload });
+    } catch (err) {
+        yield put({ type: "GET_USERLIST_ERROR", message: err.message });
+    }
+}
+
+function* watchGetUsers() {
+    yield takeLatest("GET_USERLIST", fetchUserlist);
+}
+// }}}
+
+// Notification services {{{
 function* setNotification(action) {
     if (action.payload.isError) {
         yield put({ type: "SHOW_ERROR", msg: action.payload.msg });
@@ -83,6 +104,7 @@ function* setNotification(action) {
 function* watchNotification() {
     yield takeEvery("SHOW_NOTIFICATION", setNotification);
 }
+// }}}
 
 export default function* rootSaga() {
     yield all([
@@ -91,6 +113,7 @@ export default function* rootSaga() {
         watchCreateBlog(),
         watchDeleteBlog(),
         watchLikeBlog(),
+        watchGetUsers(),
         watchNotification()
     ]);
 }
