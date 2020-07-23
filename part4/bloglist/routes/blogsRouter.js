@@ -14,9 +14,7 @@ router.post("/", async (req, res) => {
     if (!req.body.title || !req.body.url) {
         res.status(400).end();
     } else {
-        const decodedToken = req.token
-            ? jwt.verify(req.token, process.env.JWT_SECRET)
-            : null;
+        const decodedToken = req.token ? jwt.verify(req.token, process.env.JWT_SECRET) : null;
         if (!req.token || !decodedToken.id) {
             res.status(401).json({ error: "token missing" });
         } else {
@@ -43,9 +41,7 @@ router.delete("/:id", async (req, res) => {
     if (!blog) {
         res.status(404).end();
     } else {
-        const decodedToken = req.token
-            ? jwt.verify(req.token, process.env.JWT_SECRET)
-            : null;
+        const decodedToken = req.token ? jwt.verify(req.token, process.env.JWT_SECRET) : null;
         if (!req.token || !decodedToken.id) {
             res.status(401).json({ error: "token missing" });
         } else if (!blog.user.equals(decodedToken.id)) {
@@ -64,19 +60,16 @@ router.patch("/:id", async (req, res) => {
     if (!blog) {
         res.status(404).end();
     } else {
-        const decodedToken = req.token
-            ? jwt.verify(req.token, process.env.JWT_SECRET)
-            : null;
+        const isLikeOnlyPatch = Object.keys(req.body).length === 1 && "likes" in req.body;
+        const decodedToken = req.token ? jwt.verify(req.token, process.env.JWT_SECRET) : null;
         if (!req.token || !decodedToken.id) {
             res.status(401).json({ error: "token missing" });
-        } else if (!blog.user.equals(decodedToken.id)) {
+        } else if (!isLikeOnlyPatch && !blog.user.equals(decodedToken.id)) {
             res.status(401).json({ error: "not authorized" });
         } else {
-            const patchedBlog = await Blog.findByIdAndUpdate(
-                req.params.id,
-                req.body,
-                { new: true }
-            ).exec();
+            const patchedBlog = await Blog.findByIdAndUpdate(req.params.id, req.body, {
+                new: true
+            }).exec();
             res.status(200).json(patchedBlog);
         }
     }
