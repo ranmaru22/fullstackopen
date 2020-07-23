@@ -1,0 +1,11 @@
+.navbar {
+    display: flex;
+    justify-content: flex-start;
+    padding: 5px 10px;
+    margin: 0;
+    background-color: lightgray;
+}
+
+.navbar > * {
+    margin: 5px 10px;
+}

@@ -11,7 +11,9 @@ const User = ({ user }) => {
                 <h4>Added blogs</h4>
                 <ul>
                     {user.blogs.map(b => (
-                        <li key={b.id}>{b.title}</li>
+                        <li key={b.id}>
+                            <Link to={`/blogs/${b.id}`}>{b.title}</Link>
+                        </li>
                     ))}
                 </ul>
             </div>

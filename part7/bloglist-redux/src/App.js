@@ -1,6 +1,8 @@
 import React, { useEffect } from "react";
-import { Route, Switch, Link, useHistory, useRouteMatch } from "react-router-dom";
+import { Route, Switch, Link, useRouteMatch } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+
+import NavBar from "./components/NavBar";
 import Blog from "./components/Blog";
 import LoginForm from "./components/LoginForm";
 import NewBlogForm from "./components/NewBlogForm";
@@ -11,8 +13,7 @@ import Notification from "./components/Notification";
 import "./components/Blog.css";
 
 import { initializeBlogs } from "./reducers/blogsReducer";
-import { getUserFromToken, logoutUser } from "./reducers/userReducer";
-import { showNotification } from "./reducers/notificationReducer";
+import { getUserFromToken } from "./reducers/userReducer";
 import { getUserlist } from "./reducers/userlistReducer";
 
 const App = () => {
@@ -31,12 +32,6 @@ const App = () => {
         dispatch(getUserlist());
     }, [dispatch]);
 
-    const handleLogout = () => {
-        dispatch(logoutUser());
-        window.localStorage.removeItem("loggedInUser");
-        dispatch(showNotification("Successfully logged out ..."));
-    };
-
     const userMatch = useRouteMatch("/users/:id");
     const matchedUser = userMatch ? userlist.find(u => u.id === userMatch.params.id) : null;
     const blogMatch = useRouteMatch("/blogs/:id");
@@ -45,9 +40,9 @@ const App = () => {
     if (!user.token) {
         return (
             <div>
-                <h2>blogs</h2>
+                <h2>Blogs</h2>
                 <Notification args={notification} />
-                <p>Please log in</p>
+                <p>Please log in ...</p>
                 <div>
                     <LoginForm />
                 </div>
@@ -56,16 +51,10 @@ const App = () => {
     } else {
         return (
             <div>
-                <h2>
-                    <Link to="/">blogs</Link>
-                </h2>
+                <NavBar />
                 <Notification />
-                <p>Logged in as {user.name ?? user.username}</p>
-                <p>
-                    <button id="logoutBtn" onClick={handleLogout}>
-                        Logout
-                    </button>
-                </p>
+
+                <h2>Blogs</h2>
                 <Switch>
                     <Route path="/users/:id">
                         <User user={matchedUser} />
@@ -77,16 +66,13 @@ const App = () => {
                         <Blog blog={matchedBlog} />
                     </Route>
                     <Route path="/">
+                        <NewBlogForm />
                         <div id="blogs">
                             {blogs.map(blog => (
                                 <article className="blog" id={blog.id}>
                                     <Link to={`blogs/${blog.id}`}>{blog.title}</Link>
                                 </article>
                             ))}
-                        </div>
-                        <h2>Add a new blog</h2>
-                        <div>
-                            <NewBlogForm />
                         </div>
                     </Route>
                 </Switch>

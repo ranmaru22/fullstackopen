@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteBlog, likeBlog } from "../reducers/blogsReducer";
 import { showNotification } from "../reducers/notificationReducer";
@@ -38,7 +39,16 @@ const Blog = ({ blog }) => {
                             Like
                         </button>
                     </p>
-                    <p>Added by: {blog.user?.name ?? blog.user?.username ?? "Anonymous"}</p>
+
+                    {blog.user && (
+                        <p>
+                            Added by:{" "}
+                            <Link to={`/users/${blog.user.id}`}>
+                                {blog.user.name ?? blog.user.username}
+                            </Link>
+                        </p>
+                    )}
+
                     <p>
                         <button className="deleteBtn" onClick={() => handleDelete(blog)}>
                             Delete Blog
