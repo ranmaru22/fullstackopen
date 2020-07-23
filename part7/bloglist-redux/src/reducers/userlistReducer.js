@@ -5,7 +5,6 @@ export const getUserlist = () => ({
 const reducer = (state = [], action) => {
     switch (action.type) {
         case "GET_USERLIST_SUCCESS":
-            console.log(action.payload);
             return action.payload;
         case "GET_USERLIST_ERROR":
             console.error(action.message);

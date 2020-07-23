@@ -5,6 +5,7 @@ import Blog from "./components/Blog";
 import LoginForm from "./components/LoginForm";
 import NewBlogForm from "./components/NewBlogForm";
 import UserList from "./components/UserList";
+import User from "./components/User";
 import Notification from "./components/Notification";
 
 import { initializeBlogs } from "./reducers/blogsReducer";
@@ -16,6 +17,7 @@ const App = () => {
     const dispatch = useDispatch();
     const blogs = useSelector(state => state.blogs);
     const user = useSelector(state => state.user);
+    const userlist = useSelector(state => state.userlist);
     const notification = useSelector(state => state.notification);
 
     useEffect(() => {
@@ -32,6 +34,9 @@ const App = () => {
         window.localStorage.removeItem("loggedInUser");
         dispatch(showNotification("Successfully logged out ..."));
     };
+
+    const userMatch = useRouteMatch("/users/:id");
+    const matchedUser = userMatch ? userlist.find(u => u.id === userMatch.params.id) : null;
 
     if (!user.token) {
         return (
@@ -56,6 +61,9 @@ const App = () => {
                     </button>
                 </p>
                 <Switch>
+                    <Route path="/users/:id">
+                        <User user={matchedUser} />
+                    </Route>
                     <Route path="/users">
                         <UserList />
                     </Route>
