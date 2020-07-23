@@ -8,6 +8,8 @@ import UserList from "./components/UserList";
 import User from "./components/User";
 import Notification from "./components/Notification";
 
+import "./components/Blog.css";
+
 import { initializeBlogs } from "./reducers/blogsReducer";
 import { getUserFromToken, logoutUser } from "./reducers/userReducer";
 import { showNotification } from "./reducers/notificationReducer";
@@ -37,6 +39,8 @@ const App = () => {
 
     const userMatch = useRouteMatch("/users/:id");
     const matchedUser = userMatch ? userlist.find(u => u.id === userMatch.params.id) : null;
+    const blogMatch = useRouteMatch("/blogs/:id");
+    const matchedBlog = blogMatch ? blogs.find(b => b.id === blogMatch.params.id) : null;
 
     if (!user.token) {
         return (
@@ -52,7 +56,9 @@ const App = () => {
     } else {
         return (
             <div>
-                <h2>blogs</h2>
+                <h2>
+                    <Link to="/">blogs</Link>
+                </h2>
                 <Notification />
                 <p>Logged in as {user.name ?? user.username}</p>
                 <p>
@@ -67,10 +73,15 @@ const App = () => {
                     <Route path="/users">
                         <UserList />
                     </Route>
+                    <Route path="/blogs/:id">
+                        <Blog blog={matchedBlog} />
+                    </Route>
                     <Route path="/">
                         <div id="blogs">
                             {blogs.map(blog => (
-                                <Blog key={blog.id} blog={blog} />
+                                <article className="blog" id={blog.id}>
+                                    <Link to={`blogs/${blog.id}`}>{blog.title}</Link>
+                                </article>
                             ))}
                         </div>
                         <h2>Add a new blog</h2>
