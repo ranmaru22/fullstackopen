@@ -10,6 +10,7 @@ import blogsRouter from "./routes/blogsRouter.js";
 import userRouter from "./routes/userRouter.js";
 import loginRouter from "./routes/loginRouter.js";
 import testRouter from "./routes/testRouter.js";
+import commentRouter from "./routes/commentsRouter.js";
 
 const app = express();
 
@@ -32,6 +33,7 @@ app.use(mw.getToken);
 app.use("/api/blogs", blogsRouter);
 app.use("/api/user", userRouter);
 app.use("/api/login", loginRouter);
+app.use("/api/comments", commentRouter);
 if (process.env.NODE_ENV === "test") {
     app.use("/api/testing", testRouter);
 }

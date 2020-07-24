@@ -6,7 +6,10 @@ import User from "../models/user.js";
 const router = express.Router();
 
 router.get("/", async (req, res) => {
-    const response = await Blog.find().populate("user", "-blogs").exec();
+    const response = await Blog.find()
+        .populate("user", "-blogs")
+        .populate("comments", "-blog -user")
+        .exec();
     res.json(response);
 });
 
