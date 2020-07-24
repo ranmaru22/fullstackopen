@@ -7,8 +7,14 @@ import Comment from "../models/comment.js";
 const router = express.Router();
 
 router.get("/", async (req, res) => {
-    const response = await Comment.find().populate("user", "-blogs").exec();
-    res.json(response);
+    const getFromBlogId = req.query.blog || null;
+    if (!getFromBlogId) {
+        const response = await Comment.find().populate("user", "-blogs").exec();
+        res.json(response);
+    } else {
+        const blog = await Blog.findById(getFromBlogId).populate("comments", "-user -blog").exec();
+        res.json(blog.comments);
+    }
 });
 
 router.get("/:id", async (req, res) => {
@@ -29,10 +35,14 @@ router.post("/", async (req, res) => {
             res.status(401).json({ error: "token missing" });
         } else {
             const user = await User.findById(decodedToken.id).exec();
-            const comment = new Comment({ user: user.id, ...req.body });
-            const result = await comment.save();
-            await Blog.findByIdAndUpdate(comment.blog, { $push: { comments: comment } });
-            res.status(201).json(result.toJSON());
+            const comment = new Comment({ user: user._id, ...req.body });
+            await comment.save();
+            const blog = await Blog.findByIdAndUpdate(
+                comment.blog,
+                { $push: { comments: comment } },
+                { new: true }
+            );
+            res.status(201).json(blog.toJSON());
         }
     }
 });
