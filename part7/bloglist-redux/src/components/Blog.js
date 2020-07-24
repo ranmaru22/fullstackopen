@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteBlog, likeBlog } from "../reducers/blogsReducer";
 import { showNotification } from "../reducers/notificationReducer";
+import NewCommentForm from "./NewCommentForm";
 import "./Blog.css";
 
 const Blog = ({ blog }) => {
@@ -55,16 +56,17 @@ const Blog = ({ blog }) => {
                         </button>
                     </p>
 
-                    {blog.comments && (
-                        <div>
-                            <h4>Comments</h4>
+                    <div>
+                        <h4>Comments</h4>
+                        <NewCommentForm blog={blog} />
+                        {blog.comments && (
                             <ul>
                                 {blog.comments.map(c => (
                                     <li key={c.id}>{c.text}</li>
                                 ))}
                             </ul>
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </div>
             </div>
         );

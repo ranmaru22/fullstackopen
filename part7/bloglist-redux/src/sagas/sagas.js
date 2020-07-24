@@ -1,5 +1,6 @@
 import { all, call, put, takeEvery, takeLatest } from "redux-saga/effects";
 import blogService from "../services/blogs";
+import commentService from "../services/comments";
 import loginService from "../services/login";
 import userService from "../services/users";
 
@@ -43,6 +44,21 @@ function* deleteBlog(action) {
 
 function* watchDeleteBlog() {
     yield takeLatest("DEL_BLOG", deleteBlog);
+}
+
+function* addNewComment(action) {
+    try {
+        yield call(commentService.create, action.newComment, action.token);
+        console.log();
+        const payload = yield call(commentService.getBlogComments, action.newComment.blog);
+        yield put({ type: "ADD_COMMENT_SUCCESS", payload, blog: action.newComment.blog });
+    } catch (err) {
+        yield put({ type: "ADD_COMMENT_ERROR", message: err.message });
+    }
+}
+
+function* watchAddComment() {
+    yield takeLatest("ADD_COMMENT", addNewComment);
 }
 
 function* likeBlog(action) {
@@ -112,6 +128,7 @@ export default function* rootSaga() {
         watchInitialize(),
         watchCreateBlog(),
         watchDeleteBlog(),
+        watchAddComment(),
         watchLikeBlog(),
         watchGetUsers(),
         watchNotification()
