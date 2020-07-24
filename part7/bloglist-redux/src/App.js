@@ -10,7 +10,9 @@ import UserList from "./components/UserList";
 import User from "./components/User";
 import Notification from "./components/Notification";
 
-import "./components/Blog.css";
+import "semantic-ui-css/semantic.min.css";
+import "./App.css";
+import { Header, Icon, Container, List } from "semantic-ui-react";
 
 import { initializeBlogs } from "./reducers/blogsReducer";
 import { getUserFromToken } from "./reducers/userReducer";
@@ -39,43 +41,63 @@ const App = () => {
 
     if (!user.token) {
         return (
-            <div>
-                <h2>Blogs</h2>
+            <Container>
+                <Header as="h1" className="loggedOutHeader">
+                    <Icon name="blogger b" />
+                    <Header.Content>
+                        Blogs
+                        <Header.Subheader>Please log in ...</Header.Subheader>
+                    </Header.Content>
+                </Header>
                 <Notification args={notification} />
-                <p>Please log in ...</p>
                 <div>
                     <LoginForm />
                 </div>
-            </div>
+            </Container>
         );
     } else {
         return (
             <div>
                 <NavBar />
-                <Notification />
+                <Container>
+                    <Notification />
 
-                <h2>Blogs</h2>
-                <Switch>
-                    <Route path="/users/:id">
-                        <User user={matchedUser} />
-                    </Route>
-                    <Route path="/users">
-                        <UserList />
-                    </Route>
-                    <Route path="/blogs/:id">
-                        <Blog blog={matchedBlog} />
-                    </Route>
-                    <Route path="/">
-                        <NewBlogForm />
-                        <div id="blogs">
-                            {blogs.map(blog => (
-                                <article className="blog" key={blog.id}>
-                                    <Link to={`blogs/${blog.id}`}>{blog.title}</Link>
-                                </article>
-                            ))}
-                        </div>
-                    </Route>
-                </Switch>
+                    <Header as="h1">
+                        <Icon name="blogger b" />
+                        <Header.Content>
+                            Blogs
+                            <Header.Subheader>Amazing blog aggregator!</Header.Subheader>
+                        </Header.Content>
+                    </Header>
+
+                    <Switch>
+                        <Route path="/users/:id">
+                            <User user={matchedUser} />
+                        </Route>
+                        <Route path="/users">
+                            <UserList />
+                        </Route>
+                        <Route path="/blogs/:id">
+                            <Blog blog={matchedBlog} />
+                        </Route>
+                        <Route path="/">
+                            <Container>
+                                <NewBlogForm />
+                            </Container>
+                            <Container>
+                                <List divided relaxed id="blogs">
+                                    {blogs.map(blog => (
+                                        <List.Item className="blog" key={blog.id}>
+                                            <List.Content>
+                                                <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
+                                            </List.Content>
+                                        </List.Item>
+                                    ))}
+                                </List>
+                            </Container>
+                        </Route>
+                    </Switch>
+                </Container>
             </div>
         );
     }

@@ -2,7 +2,9 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createNewBlog } from "../reducers/blogsReducer";
 import { showNotification } from "../reducers/notificationReducer";
+
 import "./NewBlogForm.css";
+import { Form, Button } from "semantic-ui-react";
 
 const NewBlogForm = () => {
     const dispatch = useDispatch();
@@ -27,47 +29,50 @@ const NewBlogForm = () => {
 
     return (
         <div>
-            <div className={isVisible ? "hidden" : ""}>
-                <button onClick={toggleVisible}>Add new Blog</button>
-            </div>
-            <div className={isVisible ? "" : "hidden"}>
-                <form id="addBlogForm" onSubmit={handleSubmit}>
-                    <div>
-                        Title:
-                        <input
+            <section className={isVisible ? "hidden" : ""}>
+                <Button positive onClick={toggleVisible}>
+                    Add new Blog
+                </Button>
+            </section>
+            <section className={isVisible ? "" : "hidden"}>
+                <Form id="addBlogForm" onSubmit={handleSubmit}>
+                    <Form.Group widths="equal">
+                        <Form.Input
+                            label="Title"
                             id="title"
                             type="text"
                             name="title"
                             value={title}
                             onChange={e => setTitle(e.target.value)}
                         />
-                    </div>
-                    <div>
-                        Author:
-                        <input
+                        <Form.Input
+                            label="Author"
                             id="author"
                             type="text"
                             name="author"
                             value={author}
                             onChange={e => setAuthor(e.target.value)}
                         />
-                    </div>
-                    <div>
-                        URL:
-                        <input
+                        <Form.Input
+                            label="URL"
                             id="url"
                             type="text"
                             name="url"
                             value={url}
                             onChange={e => setUrl(e.target.value)}
                         />
-                    </div>
-                    <button type="submit">Create</button>
-                    <button type="reset" onClick={toggleVisible}>
-                        Cancel
-                    </button>
-                </form>
-            </div>
+                    </Form.Group>
+                    <Button.Group>
+                        <Button positive type="submit">
+                            Create
+                        </Button>
+                        <Button.Or />
+                        <Button negative type="reset" onClick={toggleVisible}>
+                            Cancel
+                        </Button>
+                    </Button.Group>
+                </Form>
+            </section>
         </div>
     );
 };

@@ -2,31 +2,33 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
+import { Container, Header, Table } from "semantic-ui-react";
+
 const UserList = () => {
     const users = useSelector(state => state.userlist);
 
     return (
-        <div>
-            <h2>Users</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>User</th>
-                        <th>Blogs created</th>
-                    </tr>
-                </thead>
-                <tbody>
+        <Container>
+            <Header as="h2">Users</Header>
+            <Table celled>
+                <Table.Header>
+                    <Table.Row>
+                        <Table.HeaderCell>User</Table.HeaderCell>
+                        <Table.HeaderCell>Blogs created</Table.HeaderCell>
+                    </Table.Row>
+                </Table.Header>
+                <Table.Body>
                     {users.map(u => (
-                        <tr key={u.id}>
-                            <td>
+                        <Table.Row key={u.id}>
+                            <Table.Cell>
                                 <Link to={`/users/${u.id}`}>{u.name ?? u.username}</Link>
-                            </td>
-                            <td>{u.blogs.length}</td>
-                        </tr>
+                            </Table.Cell>
+                            <Table.Cell>{u.blogs.length}</Table.Cell>
+                        </Table.Row>
                     ))}
-                </tbody>
-            </table>
-        </div>
+                </Table.Body>
+            </Table>
+        </Container>
     );
 };
 

@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { loginUser } from "../reducers/userReducer";
 
+import { Form } from "semantic-ui-react";
+
 const LoginForm = () => {
     const dispatch = useDispatch();
     const [username, setUsername] = useState("");
@@ -13,29 +15,31 @@ const LoginForm = () => {
     };
 
     return (
-        <form id="loginForm" onSubmit={handleLogin}>
-            <div>
-                Username:{" "}
+        <Form id="loginForm" onSubmit={handleLogin}>
+            <Form.Field>
+                <label>Username</label>
                 <input
                     id="username"
                     type="text"
                     name="username"
                     value={username}
                     onChange={e => setUsername(e.target.value)}
+                    required
                 />
-            </div>
-            <div>
-                Password:{" "}
+            </Form.Field>
+            <Form.Field>
+                <label>Password</label>
                 <input
                     id="password"
                     type="password"
                     name="password"
                     value={password}
                     onChange={e => setPassword(e.target.value)}
+                    required
                 />
-            </div>
-            <button type="submit">Login</button>
-        </form>
+            </Form.Field>
+            <Form.Button type="submit">Login</Form.Button>
+        </Form>
     );
 };
 

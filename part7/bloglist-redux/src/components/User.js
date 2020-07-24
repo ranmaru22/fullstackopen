@@ -1,22 +1,29 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
+import { Container, Header, Icon, List } from "semantic-ui-react";
+
 const User = ({ user }) => {
     if (!user) {
         return null;
     } else {
         return (
-            <div>
-                <h2>{user.name ?? user.username}</h2>
-                <h4>Added blogs</h4>
-                <ul>
-                    {user.blogs.map(b => (
-                        <li key={b.id}>
-                            <Link to={`/blogs/${b.id}`}>{b.title}</Link>
-                        </li>
+            <Container>
+                <Header as="h2">
+                    <Icon name="user circle" />
+                    {user.name ?? user.username}
+                </Header>
+                <Header as="h4">Added blogs</Header>
+                <List divided relaxed id="blogs">
+                    {user.blogs.map(blog => (
+                        <List.Item className="blog" key={blog.id}>
+                            <List.Content>
+                                <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
+                            </List.Content>
+                        </List.Item>
                     ))}
-                </ul>
-            </div>
+                </List>
+            </Container>
         );
     }
 };

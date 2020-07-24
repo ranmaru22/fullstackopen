@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { addNewComment } from "../reducers/blogsReducer";
 import { showNotification } from "../reducers/notificationReducer";
 
+import { Form } from "semantic-ui-react";
+
 const NewCommentForm = ({ blog }) => {
     const dispatch = useDispatch();
     const token = useSelector(state => state.user.token);
@@ -18,20 +20,20 @@ const NewCommentForm = ({ blog }) => {
 
     return (
         <div>
-            <div>
-                <form id="addCommentForm" onSubmit={handleSubmit}>
-                    <div>
-                        <input
-                            id="text"
-                            type="text"
-                            name="text"
-                            value={commentText}
-                            onChange={e => setCommentText(e.target.value)}
-                        />
-                        <button type="submit">Submit</button>
-                    </div>
-                </form>
-            </div>
+            <Form id="addCommentForm" onSubmit={handleSubmit}>
+                <Form.Group widths="equal">
+                    <Form.Input
+                        fluid
+                        id="text"
+                        type="text"
+                        name="text"
+                        placeholder="Add a comment ..."
+                        value={commentText}
+                        onChange={e => setCommentText(e.target.value)}
+                    />
+                    <Form.Button type="submit">Submit</Form.Button>
+                </Form.Group>
+            </Form>
         </div>
     );
 };
