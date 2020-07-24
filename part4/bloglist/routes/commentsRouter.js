@@ -36,13 +36,13 @@ router.post("/", async (req, res) => {
         } else {
             const user = await User.findById(decodedToken.id).exec();
             const comment = new Comment({ user: user._id, ...req.body });
-            await comment.save();
-            const blog = await Blog.findByIdAndUpdate(
+            const result = await comment.save();
+            await Blog.findByIdAndUpdate(
                 comment.blog,
                 { $push: { comments: comment } },
                 { new: true }
             );
-            res.status(201).json(blog.toJSON());
+            res.status(201).json(result.toJSON());
         }
     }
 });
