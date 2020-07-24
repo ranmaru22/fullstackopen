@@ -2,6 +2,7 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import Blog from "../models/blog.js";
 import User from "../models/user.js";
+import Comment from "../models/comment.js";
 
 const router = express.Router();
 
@@ -52,6 +53,7 @@ router.delete("/:id", async (req, res) => {
         } else {
             const user = await User.findOne(blog.user).exec();
             await user.update({ $pull: { blogs: blog._id } });
+            await Comment.deleteMany({ blog: blog._id });
             await Blog.findByIdAndRemove(req.params.id);
             res.status(204).end();
         }

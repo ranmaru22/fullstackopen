@@ -54,6 +54,17 @@ const Blog = ({ blog }) => {
                             Delete Blog
                         </button>
                     </p>
+
+                    {blog.comments && (
+                        <div>
+                            <h4>Comments</h4>
+                            <ul>
+                                {blog.comments.map(c => (
+                                    <li key={c.id}>{c.text}</li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
                 </div>
             </div>
         );

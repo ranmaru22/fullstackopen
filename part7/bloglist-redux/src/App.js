@@ -69,7 +69,7 @@ const App = () => {
                         <NewBlogForm />
                         <div id="blogs">
                             {blogs.map(blog => (
-                                <article className="blog" id={blog.id}>
+                                <article className="blog" key={blog.id}>
                                     <Link to={`blogs/${blog.id}`}>{blog.title}</Link>
                                 </article>
                             ))}
