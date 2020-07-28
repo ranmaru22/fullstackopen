@@ -97,7 +97,7 @@ export const resolvers = {
             const query = {};
             if (args.author) {
                 const author = await Author.findOne({ name: args.author }).exec();
-                query.author = author._id;
+                query.author = author?._id;
             }
             if (args.genre) {
                 query.genres = { $in: [args.genre] };
@@ -112,26 +112,39 @@ export const resolvers = {
         addBook: async (_, args) => {
             const book = await Book.findOne({ title: args.title }).exec();
             if (book) {
-                throw new UserInputError("Book already exists.");
+                throw new UserInputError("Book already exists.", { invalidArgs: args });
             } else {
                 let author = await Author.findOne({ name: args.author }).exec();
                 if (!author) {
-                    const newAuthor = new Author({ name: args.author });
-                    await newAuthor.save();
-                    author = newAuthor;
+                    try {
+                        const newAuthor = new Author({ name: args.author });
+                        await newAuthor.save();
+                        author = newAuthor;
+                    } catch (err) {
+                        throw new UserInputError(err.message, { invalidArgs: args });
+                    }
                 }
-                const newBook = new Book({ ...args, author: author._id });
-                await newBook.save();
-                return Book.findById(newBook._id).populate("author");
+                try {
+                    const newBook = new Book({ ...args, author: author._id });
+                    await newBook.save();
+                    return Book.findById(newBook._id).populate("author");
+                } catch (err) {
+                    throw new UserInputError(err.message, { invalidArgs: args });
+                }
             }
         },
 
-        editAuthor: (_, args) =>
-            Author.findOneAndUpdate(
-                { name: args.name },
-                { born: args.setBornTo },
-                { new: true }
-            ).exec()
+        editAuthor: (_, args) => {
+            try {
+                return Author.findOneAndUpdate(
+                    { name: args.name },
+                    { born: args.setBornTo },
+                    { new: true }
+                ).exec();
+            } catch (err) {
+                throw new UserInputError(err.message, { invalidArgs: args });
+            }
+        }
     },
 
     Author: {
