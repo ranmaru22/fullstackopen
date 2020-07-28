@@ -90,8 +90,21 @@ export const typeDefs = gql(`
 export const resolvers = {
     Query: {
         bookCount: () => Book.collection.countDocuments(),
+
         authorCount: () => Author.collection.countDocuments(),
-        allBooks: () => Book.find({}).populate("author").exec(),
+
+        allBooks: async (_, args) => {
+            const query = {};
+            if (args.author) {
+                const author = await Author.findOne({ name: args.author }).exec();
+                query.author = author._id;
+            }
+            if (args.genre) {
+                query.genres = { $in: [args.genre] };
+            }
+            return Book.find(query).populate("author").exec();
+        },
+
         allAuthors: () => Author.find().exec()
     },
 
@@ -102,13 +115,10 @@ export const resolvers = {
                 throw new UserInputError("Book already exists.");
             } else {
                 let author = await Author.findOne({ name: args.author }).exec();
-                console.log(author);
                 if (!author) {
-                    console.log("new author");
                     const newAuthor = new Author({ name: args.author });
                     await newAuthor.save();
                     author = newAuthor;
-                    console.log(author);
                 }
                 const newBook = new Book({ ...args, author: author._id });
                 await newBook.save();
@@ -116,19 +126,18 @@ export const resolvers = {
             }
         },
 
-        editAuthor: (_, args) => {
-            const author = authors.find(a => a.name === args.name);
-            if (!author) {
-                return null;
-            } else {
-                const patch = { ...author, born: args.setBornTo };
-                authors = authors.map(a => (a.id === patch.id ? patch : a));
-                return patch;
-            }
-        }
+        editAuthor: (_, args) =>
+            Author.findOneAndUpdate(
+                { name: args.name },
+                { born: args.setBornTo },
+                { new: true }
+            ).exec()
     },
 
     Author: {
-        bookCount: root => books.filter(b => b.author === root.name).length
+        bookCount: async root => {
+            const author = await Author.findOne({ name: root.name }).exec();
+            return (await Book.find({ author: author._id }).populate("author").exec()).length;
+        }
     }
 };
