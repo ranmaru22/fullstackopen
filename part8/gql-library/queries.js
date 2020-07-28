@@ -1,10 +1,24 @@
 import Apollo from "apollo-server";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 import Author from "./models/Author.js";
 import Book from "./models/Book.js";
+import User from "./models/User.js";
 
-const { gql, UserInputError } = Apollo;
+const { gql, UserInputError, AuthenticationError } = Apollo;
 
 export const typeDefs = gql(`
+    type User {
+        username: String!
+        passhash: String!
+        favoriteGenre: [String]!
+        id: ID!
+    }
+
+    type Token {
+        value: String!
+    }
+
     type Author {
         name: String!
         born: Int
@@ -21,6 +35,7 @@ export const typeDefs = gql(`
     }
     
     type Query {
+        me: User
         bookCount: Int!
         authorCount: Int!
         allBooks(author: String, genre: String): [Book]!
@@ -28,6 +43,17 @@ export const typeDefs = gql(`
     }
 
     type Mutation {
+        createUser(
+            username: String!
+            password: String!
+            favoriteGenre: String
+            ): User
+
+        login(
+            username: String!
+            password: String!
+        ): Token
+
         addBook(
             title: String!
             published: Int!
@@ -60,11 +86,46 @@ export const resolvers = {
             return Book.find(query).populate("author").exec();
         },
 
-        allAuthors: () => Author.find().exec()
+        allAuthors: () => Author.find().exec(),
+
+        me: (_, __, { currentUser }) => currentUser
     },
 
     Mutation: {
-        addBook: async (_, args) => {
+        createUser: async (_, args) => {
+            const salt = await bcrypt.genSalt(10);
+            const passhash = await bcrypt.hash(args.password, salt);
+            try {
+                const newUser = new User({
+                    username: args.username,
+                    passhash,
+                    favoriteGenre: args.favoriteGenre
+                });
+                const result = await newUser.save();
+                return result;
+            } catch (err) {
+                throw new UserInputError(err.message, {
+                    invalidArgs: { ...args, password: "..." }
+                });
+            }
+        },
+
+        login: async (_, args) => {
+            const user = await User.findOne({ username: args.username }).exec();
+            const correctCredentials =
+                !!user && (await bcrypt.compare(args.password, user.passhash));
+            if (!correctCredentials) {
+                throw new AuthenticationError("Invalid credentials.");
+            } else {
+                const payload = { username: user.username, id: user._id };
+                return { value: jwt.sign(payload, process.env.JWT_SECRET) };
+            }
+        },
+
+        addBook: async (_, args, { currentUser }) => {
+            if (!currentUser) {
+                throw new AuthenticationError("Not authorized.");
+            }
             const book = await Book.findOne({ title: args.title }).exec();
             if (book) {
                 throw new UserInputError("Book already exists.", { invalidArgs: args });
@@ -89,7 +150,10 @@ export const resolvers = {
             }
         },
 
-        editAuthor: (_, args) => {
+        editAuthor: (_, args, { currentUser }) => {
+            if (!currentUser) {
+                throw new AuthenticationError("Not authorized.");
+            }
             try {
                 return Author.findOneAndUpdate(
                     { name: args.name },
@@ -107,5 +171,14 @@ export const resolvers = {
             const author = await Author.findOne({ name: root.name }).exec();
             return (await Book.find({ author: author._id }).populate("author").exec()).length;
         }
+    }
+};
+
+export const context = async ({ req }) => {
+    const auth = req ? req.headers.authorization : null;
+    if (auth && auth.toLowerCase().startsWith("bearer ")) {
+        const decodedToken = jwt.verify(auth.slice(7), process.env.JWT_SECRET);
+        const currentUser = await User.findById(decodedToken.id).exec();
+        return { currentUser };
     }
 };

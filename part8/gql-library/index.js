@@ -1,6 +1,6 @@
 import Apollo from "apollo-server";
 import mongoose from "mongoose";
-import { typeDefs, resolvers } from "./queries.js";
+import { typeDefs, resolvers, context } from "./queries.js";
 
 const { ApolloServer } = Apollo;
 
@@ -17,7 +17,8 @@ mongoose.connect(
 
 const server = new ApolloServer({
     typeDefs,
-    resolvers
+    resolvers,
+    context
 });
 
 server.listen().then(({ url }) => console.log(`Server ready at ${url}...`));
