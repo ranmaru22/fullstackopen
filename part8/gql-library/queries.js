@@ -57,7 +57,7 @@ export const typeDefs = gql(`
         addBook(
             title: String!
             published: Int!
-            author: ID!
+            author: String!
             genres: [String]!
         ): Book
 
@@ -126,13 +126,17 @@ export const resolvers = {
             if (!currentUser) {
                 throw new AuthenticationError("Not authorized.");
             }
+            console.log("add book");
             const book = await Book.findOne({ title: args.title }).exec();
             if (book) {
                 throw new UserInputError("Book already exists.", { invalidArgs: args });
             } else {
+                console.log("trigger new book");
                 let author = await Author.findOne({ name: args.author }).exec();
                 if (!author) {
+                    console.log("author not found");
                     try {
+                        console.log("tigger new author");
                         const newAuthor = new Author({ name: args.author });
                         await newAuthor.save();
                         author = newAuthor;
@@ -141,6 +145,7 @@ export const resolvers = {
                     }
                 }
                 try {
+                    console.log("saving new book");
                     const newBook = new Book({ ...args, author: author._id });
                     await newBook.save();
                     return Book.findById(newBook._id).populate("author");
