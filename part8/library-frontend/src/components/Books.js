@@ -1,20 +1,25 @@
-import React, { useState } from "react";
-import { useQuery } from "@apollo/client";
+import React, { useState, useEffect } from "react";
+import { useQuery, useLazyQuery } from "@apollo/client";
 import { ALL_BOOKS, ALL_GENRES } from "../queries";
 
 const Books = ({ show, filter }) => {
-    const bookResults = useQuery(ALL_BOOKS);
-    const genreResults = useQuery(ALL_GENRES);
     const [showGenre, setShowGenre] = useState("");
+    const [books, setBooks] = useState([]);
+    const [fetchBooks, { loading, data }] = useLazyQuery(ALL_BOOKS);
+    const genreResults = useQuery(ALL_GENRES);
+
+    useEffect(() => {
+        fetchBooks({ variables: { genre: filter?.[0] ?? showGenre } });
+        if (data && data.allBooks) {
+            setBooks(data.allBooks);
+        }
+    }, [showGenre, fetchBooks, setBooks, data, filter]);
 
     if (!show) {
         return null;
-    } else if (bookResults.loading) {
+    } else if (loading) {
         return <div>Loading data ...</div>;
-    } else if (bookResults.error) {
-        return <div>{bookResults.error}</div>;
     } else {
-        const books = bookResults.data.allBooks;
         return (
             <div>
                 <h2>books</h2>
@@ -31,21 +36,13 @@ const Books = ({ show, filter }) => {
                             <th>author</th>
                             <th>published</th>
                         </tr>
-                        {books
-                            .filter(b =>
-                                filter
-                                    ? b.genres.some(elem => filter.includes(elem))
-                                    : showGenre
-                                    ? b.genres.includes(showGenre)
-                                    : b
-                            )
-                            .map(b => (
-                                <tr key={b.title}>
-                                    <td>{b.title}</td>
-                                    <td>{b.author.name}</td>
-                                    <td>{b.published}</td>
-                                </tr>
-                            ))}
+                        {books.map(b => (
+                            <tr key={b.title}>
+                                <td>{b.title}</td>
+                                <td>{b.author.name}</td>
+                                <td>{b.published}</td>
+                            </tr>
+                        ))}
                     </tbody>
                 </table>
 

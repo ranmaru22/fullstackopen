@@ -11,7 +11,7 @@ const NewBook = ({ show }) => {
 
     const [addBook] = useMutation(ADD_BOOK, {
         onError: err => console.log(err),
-        refetchQueries: [{ query: ALL_BOOKS }, { query: ALL_AUTHORS }]
+        refetchQueries: [{ query: ALL_AUTHORS }, { query: ALL_BOOKS }]
     });
 
     const submit = event => {
