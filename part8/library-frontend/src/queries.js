@@ -23,6 +23,12 @@ export const ALL_AUTHORS = gql(`
     }
 `);
 
+export const ALL_GENRES = gql(`
+    query {
+        allGenres
+    }
+`);
+
 export const ADD_BOOK = gql(`
     mutation addBook($title: String!, $published: Int!, $author: String!, $genres: [String]!) {
         addBook(
