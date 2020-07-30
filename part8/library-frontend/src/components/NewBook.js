@@ -10,10 +10,11 @@ const NewBook = ({ show }) => {
     const [genres, setGenres] = useState([]);
 
     const [addBook] = useMutation(ADD_BOOK, {
+        onError: err => console.log(err),
         refetchQueries: [{ query: ALL_BOOKS }, { query: ALL_AUTHORS }]
     });
 
-    const submit = async event => {
+    const submit = event => {
         event.preventDefault();
         addBook({ variables: { title, published: Number(published), author, genres } });
         setTitle("");

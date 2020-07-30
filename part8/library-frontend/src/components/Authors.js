@@ -1,10 +1,12 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useQuery } from "@apollo/client";
 import { ALL_AUTHORS } from "../queries";
 import EditForm from "./EditForm";
+import { UserContext } from "../userContext";
 
 const Authors = ({ show }) => {
     const results = useQuery(ALL_AUTHORS);
+    const [token] = useContext(UserContext);
 
     if (!show) {
         return null;
@@ -33,7 +35,7 @@ const Authors = ({ show }) => {
                         ))}
                     </tbody>
                 </table>
-                <EditForm />
+                {token && <EditForm />}
             </div>
         );
     }
