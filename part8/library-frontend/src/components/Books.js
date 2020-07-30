@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useQuery } from "@apollo/client";
 import { ALL_BOOKS, ALL_GENRES } from "../queries";
 
-const Books = ({ show }) => {
+const Books = ({ show, filter }) => {
     const bookResults = useQuery(ALL_BOOKS);
     const genreResults = useQuery(ALL_GENRES);
     const [showGenre, setShowGenre] = useState("");
@@ -18,6 +18,11 @@ const Books = ({ show }) => {
         return (
             <div>
                 <h2>books</h2>
+                {filter && (
+                    <h3>
+                        showing books in your favorite genre <em>{filter}</em>
+                    </h3>
+                )}
 
                 <table>
                     <tbody>
@@ -27,25 +32,33 @@ const Books = ({ show }) => {
                             <th>published</th>
                         </tr>
                         {books
-                            .filter(a => (showGenre ? a.genres.includes(showGenre) : a))
-                            .map(a => (
-                                <tr key={a.title}>
-                                    <td>{a.title}</td>
-                                    <td>{a.author.name}</td>
-                                    <td>{a.published}</td>
+                            .filter(b =>
+                                filter
+                                    ? b.genres.some(elem => filter.includes(elem))
+                                    : showGenre
+                                    ? b.genres.includes(showGenre)
+                                    : b
+                            )
+                            .map(b => (
+                                <tr key={b.title}>
+                                    <td>{b.title}</td>
+                                    <td>{b.author.name}</td>
+                                    <td>{b.published}</td>
                                 </tr>
                             ))}
                     </tbody>
                 </table>
 
-                <div>
-                    <button onClick={() => setShowGenre("")}>RESET FILTER</button>
-                    {genreResults.data.allGenres.map(genre => (
-                        <button key={genre} onClick={() => setShowGenre(genre)}>
-                            {genre}
-                        </button>
-                    ))}
-                </div>
+                {!filter && (
+                    <div>
+                        <button onClick={() => setShowGenre("")}>RESET FILTER</button>
+                        {genreResults.data.allGenres.map(genre => (
+                            <button key={genre} onClick={() => setShowGenre(genre)}>
+                                {genre}
+                            </button>
+                        ))}
+                    </div>
+                )}
             </div>
         );
     }
