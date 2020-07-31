@@ -21,4 +21,7 @@ const server = new ApolloServer({
     context
 });
 
-server.listen().then(({ url }) => console.log(`Server ready at ${url}...`));
+server.listen().then(({ url, subscriptionsUrl }) => {
+    console.log(`Server ready at ${url}...`);
+    console.log(`Subscriptions available under ${subscriptionsUrl}...`);
+});

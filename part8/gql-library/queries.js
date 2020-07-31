@@ -5,7 +5,8 @@ import Author from "./models/Author.js";
 import Book from "./models/Book.js";
 import User from "./models/User.js";
 
-const { gql, UserInputError, AuthenticationError } = Apollo;
+const { gql, PubSub, UserInputError, AuthenticationError } = Apollo;
+const pubSub = new PubSub();
 
 export const typeDefs = gql(`
     type User {
@@ -66,6 +67,10 @@ export const typeDefs = gql(`
             name: String!
             setBornTo: Int!
         ): Author
+    }
+
+    type Subscription {
+        bookAdded: Book!
     }
 `);
 
@@ -149,7 +154,9 @@ export const resolvers = {
                 try {
                     const newBook = new Book({ ...args, author: author._id });
                     await newBook.save();
-                    return Book.findById(newBook._id).populate("author");
+                    const result = await Book.findById(newBook._id).populate("author").exec();
+                    pubSub.publish("BOOK_ADDED", { bookAdded: result });
+                    return result;
                 } catch (err) {
                     throw new UserInputError(err.message, { invalidArgs: args });
                 }
@@ -169,6 +176,12 @@ export const resolvers = {
             } catch (err) {
                 throw new UserInputError(err.message, { invalidArgs: args });
             }
+        }
+    },
+
+    Subscription: {
+        bookAdded: {
+            subscribe: () => pubSub.asyncIterator(["BOOK_ADDED"])
         }
     },
 
