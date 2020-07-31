@@ -3,10 +3,11 @@ import { useQuery, useLazyQuery } from "@apollo/client";
 import { ALL_BOOKS, ALL_GENRES } from "../queries";
 
 const Books = ({ show, filter }) => {
-    const [showGenre, setShowGenre] = useState("");
-    const [books, setBooks] = useState([]);
-    const [fetchBooks, { loading, data }] = useLazyQuery(ALL_BOOKS);
     const genreResults = useQuery(ALL_GENRES);
+    const allBookResults = useQuery(ALL_BOOKS);
+    const [showGenre, setShowGenre] = useState("");
+    const [books, setBooks] = useState(() => allBookResults);
+    const [fetchBooks, { loading, data }] = useLazyQuery(ALL_BOOKS);
 
     useEffect(() => {
         fetchBooks({ variables: { genre: filter?.[0] ?? showGenre } });

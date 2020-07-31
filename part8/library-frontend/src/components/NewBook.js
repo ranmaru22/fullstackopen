@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useMutation, useSubscription, useApolloClient } from "@apollo/client";
-import { ADD_BOOK, ALL_BOOKS, ALL_AUTHORS, SUB_BOOK_ADDED } from "../queries";
+import { ADD_BOOK, ALL_BOOKS, ALL_AUTHORS, ALL_GENRES, SUB_BOOK_ADDED } from "../queries";
 
 const NewBook = ({ show }) => {
     const [title, setTitle] = useState("");
@@ -13,12 +13,36 @@ const NewBook = ({ show }) => {
 
     const updateBookCache = addedBook => {
         const isIncludedIn = (set, obj) => set.map(p => p.id).includes(obj.id);
-        const storedData = client.readQuery({ query: ALL_BOOKS, variables: { genre: "" } });
-        if (storedData && !isIncludedIn(storedData.allBooks, addedBook)) {
+        const getQuery = query => {
+            try {
+                return client.readQuery({ query });
+            } catch (_) {
+                return null;
+            }
+        };
+
+        const storedBooks = getQuery(ALL_BOOKS);
+        const storedAuthors = getQuery(ALL_AUTHORS);
+        const storedGenres = getQuery(ALL_GENRES);
+
+        if (storedBooks && !isIncludedIn(storedBooks.allBooks, addedBook)) {
             client.writeQuery({
                 query: ALL_BOOKS,
-                variables: { genre: "" },
-                data: { allBooks: storedData.allBooks.concat(addedBook) }
+                data: { allBooks: storedBooks.allBooks.concat(addedBook) }
+            });
+            if (!isIncludedIn(storedAuthors.allAuthors, addedBook.author)) {
+                client.writeQuery({
+                    query: ALL_AUTHORS,
+                    data: { allAuthors: storedAuthors.allAuthors.concat(addedBook.author) }
+                });
+            }
+            addedBook.genres.forEach(genre => {
+                if (!storedGenres.allGenres.includes(genre)) {
+                    client.writeQuery({
+                        query: ALL_GENRES,
+                        data: { allGenres: storedGenres.allGenres.concat(genre) }
+                    });
+                }
             });
         }
     };
@@ -26,16 +50,16 @@ const NewBook = ({ show }) => {
     useSubscription(SUB_BOOK_ADDED, {
         onSubscriptionData: ({ subscriptionData }) => {
             const addedBook = subscriptionData.data.bookAdded;
-            updateBookCache(addBook);
+            updateBookCache(addedBook);
             window.alert(`Added ${addedBook.title}`);
         }
     });
 
     const [addBook] = useMutation(ADD_BOOK, {
         onError: err => console.log(err),
-        refetchQueries: [{ query: ALL_AUTHORS }],
         update: (_, response) => {
-            updateBookCache(response.data.addBook);
+            const book = response.data.addBook;
+            updateBookCache(book);
         }
     });
 

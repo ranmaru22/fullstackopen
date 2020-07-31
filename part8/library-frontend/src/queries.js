@@ -7,8 +7,10 @@ export const ALL_BOOKS = gql(`
             published
             author {
                 name
+                id
             }
             genres
+            id
         }
     }
 `);
@@ -19,6 +21,7 @@ export const ALL_AUTHORS = gql(`
             name
             born
             bookCount
+            id
         }
     }
 `);
@@ -50,8 +53,10 @@ export const ADD_BOOK = gql(`
             published
             author {
                 name
+                id
             }
             genres
+            id
         }
     }
 `);
@@ -61,6 +66,7 @@ export const EDIT_BIRTHYEAR = gql(`
         editAuthor(name: $name, setBornTo: $setBornTo) {
             name
             born
+            id
         }
     }
 `);
@@ -80,8 +86,10 @@ export const SUB_BOOK_ADDED = gql(`
             published
             author {
                 name
+                id
             }
             genres
+            id
         }
     }
 `);
