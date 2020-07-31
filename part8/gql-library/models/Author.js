@@ -10,4 +10,10 @@ const AuthorSchema = new mongoose.Schema({
     born: { type: Number }
 });
 
+AuthorSchema.virtual("books", {
+    ref: "Book",
+    localField: "_id",
+    foreignField: "author"
+});
+
 export default mongoose.model("Author", AuthorSchema);

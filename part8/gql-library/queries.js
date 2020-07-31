@@ -92,7 +92,7 @@ export const resolvers = {
             return Book.find(query).populate("author").exec();
         },
 
-        allAuthors: () => Author.find().exec(),
+        allAuthors: () => Author.find().populate("books").exec(),
 
         allGenres: async () => {
             const allBooks = await Book.find().exec();
@@ -186,10 +186,7 @@ export const resolvers = {
     },
 
     Author: {
-        bookCount: async root => {
-            const author = await Author.findOne({ name: root.name }).exec();
-            return (await Book.find({ author: author._id }).populate("author").exec()).length;
-        }
+        bookCount: root => root.books.length
     }
 };
 
