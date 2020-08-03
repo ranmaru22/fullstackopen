@@ -10,13 +10,19 @@ const patientData: Patient[] = data.map(obj => {
 });
 
 const getCleanedPatientData = (): CleanedPatientData[] => {
-    return patientData.map(({ id, name, dateOfBirth, gender, occupation }) => ({
+    return patientData.map(({ id, name, dateOfBirth, gender, occupation, entries }) => ({
         id,
         name,
         dateOfBirth,
         gender,
-        occupation
+        occupation,
+        entries
     }));
+};
+
+const getPatientById = (id: string): Patient | undefined => {
+    const patient = patientData.find(p => p.id === id);
+    return patient;
 };
 
 const addPatient = (obj: NewPatientTemplate): Patient => {
@@ -28,4 +34,4 @@ const addPatient = (obj: NewPatientTemplate): Patient => {
     return newPatient;
 };
 
-export default { getCleanedPatientData, addPatient };
+export default { getCleanedPatientData, getPatientById, addPatient };

@@ -31,7 +31,8 @@ export const toNewPatient = (obj: any): NewPatientTemplate => {
         dateOfBirth: dateParse(obj.dateOfBirth),
         ssn: stringParse(obj.ssn, "ssn"),
         gender: genderParse(obj.gender),
-        occupation: stringParse(obj.occupation, "occupation")
+        occupation: stringParse(obj.occupation, "occupation"),
+        entries: []
     };
     return newPatient;
 };
