@@ -2,11 +2,17 @@ import {
     Gender,
     HealthCheckRating,
     Entry,
+    EntryType,
+    NewEntryTemplate,
     HospitalEntry,
     OccupationalHealthcareEntry,
     HealthCheckEntry,
     NewPatientTemplate
 } from "./types";
+
+const assertNever = (x: never): never => {
+    throw new Error(`Unhandled union member: ${JSON.stringify(x)}`);
+};
 
 const isString = (x: any): x is string => typeof x === "string" || x instanceof String;
 const isDateStr = (x: any): boolean => !!Date.parse(x);
@@ -14,31 +20,40 @@ const isGender = (x: any): x is Gender => Object.values(Gender).includes(x);
 const isHealthCheckRating = (x: any): x is HealthCheckRating =>
     Object.values(HealthCheckRating).includes(x);
 
-const isBaseEntry = (x: any): boolean =>
-    x.id !== undefined &&
+const isBaseEntry = (x: any, newEntry?: boolean): boolean =>
+    (newEntry ? true : x.id !== undefined) &&
     x.description !== undefined &&
     isDateStr(x.date) &&
     x.specialist !== undefined;
 
-const isHospitalEntry = (x: any): x is HospitalEntry =>
-    isBaseEntry(x) &&
-    x.type === "Hospital" &&
+const isHospitalEntry = (x: any, newEntry?: boolean): x is HospitalEntry =>
+    isBaseEntry(x, newEntry) &&
+    x.type === EntryType.Hospital &&
     isDateStr(x.discharge.date) &&
     x.discharge.criteria !== undefined;
 
-const isOccupationalHealthcareEntry = (x: any): x is OccupationalHealthcareEntry =>
-    isBaseEntry(x) &&
-    x.type === "OccupationalHealthcare" &&
+const isOccupationalHealthcareEntry = (
+    x: any,
+    newEntry?: boolean
+): x is OccupationalHealthcareEntry =>
+    isBaseEntry(x, newEntry) &&
+    x.type === EntryType.OccupationalHealthcare &&
     x.employerName !== undefined &&
     x.sickLeave
         ? isDateStr(x.sickLeave.startDate) && isDateStr(x.sickLeave.endDate)
         : true;
 
-const isHealthCheckEntry = (x: any): x is HealthCheckEntry =>
-    isBaseEntry(x) && x.type === "HealthCheck" && isHealthCheckRating(x.healthCheckRating);
+const isHealthCheckEntry = (x: any, newEntry?: boolean): x is HealthCheckEntry =>
+    isBaseEntry(x, newEntry) &&
+    x.type === EntryType.HealthCheck &&
+    isHealthCheckRating(x.healthCheckRating);
 
-const isEntry = (x: any): x is Entry =>
-    isHospitalEntry(x) || isOccupationalHealthcareEntry(x) || isHealthCheckEntry(x);
+const isEntry = (x: any, newEntry?: boolean): x is Entry =>
+    isHospitalEntry(x, newEntry) ||
+    isOccupationalHealthcareEntry(x, newEntry) ||
+    isHealthCheckEntry(x, newEntry);
+
+const isValidEntryType = (x: any): x is EntryType => Object.values(EntryType).includes(x);
 
 const stringParse = (str: any, fieldName?: string): string => {
     if (!isString(str)) {
@@ -61,13 +76,25 @@ const genderParse = (gender: any): Gender => {
     return gender;
 };
 
+const healthCheckRatingParse = (rating: any): HealthCheckRating => {
+    if (!isHealthCheckRating(rating)) {
+        throw new Error(`Invalid health rating: ${rating}`);
+    }
+    return rating;
+};
+
 const hospitalEntryParse = (entry: any): HospitalEntry => ({
     ...entry,
-    discharge: { ...entry.discharge, date: dateParse(entry.discharge.date) }
+    date: dateParse(entry.date),
+    discharge: {
+        criteria: stringParse(entry.discharge.criteria),
+        date: dateParse(entry.discharge.date)
+    }
 });
 
 const occupationalHealthcareEntryParse = (entry: any): OccupationalHealthcareEntry => ({
     ...entry,
+    date: dateParse(entry.date),
     sickLeave: entry.sickLeave
         ? {
               startDate: dateParse(entry.sickLeave.startDate),
@@ -76,17 +103,25 @@ const occupationalHealthcareEntryParse = (entry: any): OccupationalHealthcareEnt
         : undefined
 });
 
-const entryParse = (entry: any): Entry => {
-    if (!isEntry(entry)) {
+const healthCheckEntryParse = (entry: any): HealthCheckEntry => ({
+    ...entry,
+    date: dateParse(entry.date),
+    healthCheckRating: healthCheckRatingParse(entry.healthCheckRating)
+});
+
+const entryParse = (entry: any, newEntry?: boolean): Entry => {
+    if (!isEntry(entry, newEntry)) {
         throw new Error(`Invalid entry: ${entry}`);
     }
     switch (entry.type) {
-        case "Hospital":
+        case EntryType.Hospital:
             return hospitalEntryParse(entry);
-        case "OccupationalHealthcare":
+        case EntryType.OccupationalHealthcare:
             return occupationalHealthcareEntryParse(entry);
+        case EntryType.HealthCheck:
+            return healthCheckEntryParse(entry);
         default:
-            return entry;
+            return assertNever(entry);
     }
 };
 
@@ -100,4 +135,11 @@ export const toNewPatient = (obj: any): NewPatientTemplate => {
         entries: obj.entries.map((x: any) => entryParse(x))
     };
     return newPatient;
+};
+
+export const toNewEntry = (obj: any): NewEntryTemplate => {
+    if (!isValidEntryType(obj.type)) {
+        throw new Error(`Invalid entry type: ${obj.type}`);
+    }
+    return entryParse(obj, true);
 };
