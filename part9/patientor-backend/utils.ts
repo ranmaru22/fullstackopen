@@ -18,7 +18,7 @@ const isString = (x: any): x is string => typeof x === "string" || x instanceof 
 const isDateStr = (x: any): boolean => !!Date.parse(x);
 const isGender = (x: any): x is Gender => Object.values(Gender).includes(x);
 const isHealthCheckRating = (x: any): x is HealthCheckRating =>
-    Object.values(HealthCheckRating).includes(x);
+    Object.values(HealthCheckRating).includes(Number(x));
 
 const isBaseEntry = (x: any, newEntry?: boolean): boolean =>
     (newEntry ? true : x.id !== undefined) &&
